@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { quotaManager } from "@/lib/youtube/quotaManager";
 import { getCacheStats } from "@/lib/youtube/cache";
+export const dynamic = "force-dynamic";
+
 
 const ADMIN_SECRET = process.env.ADMIN_SECRET || "dev-admin-secret";
 

@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { fetchSimilarChannels } from "@/lib/data/dataService";
+export const dynamic = "force-dynamic";
+
 
 export async function GET(
   request: Request,

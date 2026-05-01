@@ -10,6 +10,8 @@ import {
   estimateMonthlyRevenue,
   estimateMonthlyViews,
 } from "@/lib/scoring";
+export const dynamic = "force-dynamic";
+
 
 // POST /api/youtube/ingest — Ingest channels for a given niche query (FREE)
 export async function POST(request: NextRequest) {

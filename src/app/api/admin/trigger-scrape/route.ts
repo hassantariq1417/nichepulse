@@ -5,6 +5,8 @@ import {
   enqueueRefreshTrending,
 } from "@/lib/jobs/scraperQueue";
 import { scrapeAllCategories } from "@/lib/jobs/scheduler";
+export const dynamic = "force-dynamic";
+
 
 // Admin secret — set ADMIN_SECRET in env vars
 const ADMIN_SECRET = process.env.ADMIN_SECRET || "dev-admin-secret";

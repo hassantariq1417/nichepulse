@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+export const dynamic = "force-dynamic";
+
 
 // ─── Smart Template Engine (works without any API key) ─────────────────────
 // Generates high-quality YouTube content using curated templates + topic injection.
