@@ -145,8 +145,16 @@ function DashboardContent() {
 
   useEffect(() => {
     fetch("/api/dashboard/stats")
-      .then((r) => r.json())
-      .then(setData)
+      .then((r) => {
+        if (!r.ok) throw new Error(`Stats API ${r.status}`);
+        return r.json();
+      })
+      .then((d) => {
+        // Validate the shape — don't set data if the API returned an error
+        if (d?.stats?.totalChannels !== undefined) {
+          setData(d);
+        }
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
@@ -180,7 +188,27 @@ function DashboardContent() {
     );
   }
 
-  if (!data) return null;
+  if (!data) {
+    return (
+      <div className="flex flex-col items-center justify-center py-24 text-center">
+        <div className="w-16 h-16 rounded-2xl bg-[#64FFDA]/10 flex items-center justify-center mb-4">
+          <BarChart3 className="w-8 h-8 text-[#64FFDA]" />
+        </div>
+        <h2 className="text-xl font-bold text-white mb-2">No Data Yet</h2>
+        <p className="text-sm text-[#94A3B8] max-w-md mb-6">
+          Your database is empty. Run the data ingest to start scraping real YouTube channels and see your dashboard come alive.
+        </p>
+        <a
+          href="/dashboard/ingest"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-semibold"
+          style={{ background: "linear-gradient(135deg, #64FFDA, #00B4D8)", color: "#080B10" }}
+        >
+          <Zap className="w-4 h-4" />
+          Go to Data Ingest
+        </a>
+      </div>
+    );
+  }
   const { stats, topNiches, recentChannels } = data;
 
   return (
