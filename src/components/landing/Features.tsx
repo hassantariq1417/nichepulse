@@ -3,10 +3,8 @@
 import {
   Search,
   Brain,
-  FileText,
   TrendingUp,
   BarChart3,
-  Target,
   Sparkles,
 } from "lucide-react";
 
@@ -28,14 +26,6 @@ const features = [
     tag: "AI Powered",
   },
   {
-    icon: FileText,
-    title: "Content Studio",
-    description:
-      "Generate viral video titles, SEO-optimized descriptions, and thumbnail concepts. Scripts and hooks based on proven patterns from top performers.",
-    color: "#FCD34D",
-    tag: "Coming Soon",
-  },
-  {
     icon: TrendingUp,
     title: "Outlier Detection",
     description:
@@ -50,14 +40,6 @@ const features = [
       "Estimate monthly earnings per niche using CPM data, view velocity, and monetization benchmarks. Know what niches actually pay.",
     color: "#F472B6",
     tag: "Data-Driven",
-  },
-  {
-    icon: Target,
-    title: "Competitor Tracking",
-    description:
-      "Track any channel's upload schedule, growth rate, and viral hits. Benchmark your performance against niche leaders.",
-    color: "#FCD34D",
-    tag: "Tracking",
   },
 ];
 
@@ -87,7 +69,7 @@ export function Features() {
         </div>
 
         {/* Feature Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           {features.map((feature) => (
             <div
               key={feature.title}
