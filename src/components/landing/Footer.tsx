@@ -5,25 +5,25 @@ import { Zap, ExternalLink, MessageCircle, Play, Mail } from "lucide-react";
 
 const footerLinks = {
   Product: [
-    { label: "Niche Finder", href: "#features" },
-    { label: "Content Studio", href: "#features" },
-    { label: "AI Recommendations", href: "#features" },
-    { label: "Pricing", href: "#pricing" },
-    { label: "Changelog", href: "#" },
+    { label: "Niche Finder", href: "/#features" },
+    { label: "Content Studio", href: "/#features" },
+    { label: "AI Recommendations", href: "/#features" },
+    { label: "Pricing", href: "/#pricing" },
+    { label: "Changelog", href: "/changelog" },
   ],
   Resources: [
-    { label: "Documentation", href: "#" },
-    { label: "API Reference", href: "#" },
-    { label: "Blog", href: "#" },
-    { label: "Tutorials", href: "#" },
-    { label: "Status", href: "#" },
+    { label: "Documentation", href: "/docs" },
+    { label: "API Reference", href: "/docs" },
+    { label: "Blog", href: "/blog" },
+    { label: "Tutorials", href: "/docs" },
+    { label: "Status", href: "/status" },
   ],
   Company: [
-    { label: "About", href: "#" },
-    { label: "Careers", href: "#" },
-    { label: "Privacy", href: "#" },
-    { label: "Terms", href: "#" },
-    { label: "Contact", href: "#" },
+    { label: "About", href: "/about" },
+    { label: "Careers", href: "/careers" },
+    { label: "Privacy", href: "/privacy" },
+    { label: "Terms", href: "/terms" },
+    { label: "Contact", href: "mailto:hello@nichepulse.io" },
   ],
 };
 

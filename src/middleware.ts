@@ -12,7 +12,7 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   // Public routes — always accessible
-  const publicPaths = ["/", "/sign-in", "/sign-up", "/api/webhooks"];
+  const publicPaths = ["/", "/sign-in", "/sign-up", "/api/webhooks", "/privacy", "/terms", "/changelog", "/docs", "/blog", "/status", "/about", "/careers", "/welcome"];
   const isPublic = publicPaths.some((p) => request.nextUrl.pathname.startsWith(p));
 
   if (isPublic) {

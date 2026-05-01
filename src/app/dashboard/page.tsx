@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   TrendingUp,
   BarChart3,
@@ -13,6 +14,7 @@ import {
   Users,
 } from "lucide-react";
 import { getScoreBadgeClasses } from "@/lib/scoring";
+import { CachedBadge } from "@/components/dashboard/CachedBadge";
 
 interface DashboardStats {
   stats: {
@@ -46,6 +48,7 @@ interface DashboardStats {
     estimatedMonthlyRevenue: number;
     category: string | null;
     nicheCategory: { name: string } | null;
+    lastScrapedAt: string | null;
   }>;
 }
 
@@ -114,6 +117,31 @@ function getCompetitionColor(level: string) {
 export default function DashboardPage() {
   const [data, setData] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showToast, setShowToast] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Redirect to onboarding if not completed
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const onboarded = localStorage.getItem("nichepulse_onboarded");
+      if (onboarded !== "true") {
+        router.replace("/welcome");
+        return;
+      }
+    }
+  }, [router]);
+
+  // Show welcome toast on first arrival from onboarding
+  useEffect(() => {
+    if (searchParams.get("onboarded") === "true") {
+      setShowToast(true);
+      // Clean URL
+      window.history.replaceState({}, "", "/dashboard");
+      const timer = setTimeout(() => setShowToast(false), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     fetch("/api/dashboard/stats")
@@ -156,6 +184,7 @@ export default function DashboardPage() {
   const { stats, topNiches, recentChannels } = data;
 
   return (
+    <>
     <div className="space-y-6 max-w-[1400px]">
       {/* Page header */}
       <div>
@@ -351,6 +380,10 @@ export default function DashboardPage() {
                               TRENDING
                             </span>
                           )}
+                          {channel.lastScrapedAt &&
+                            Date.now() - new Date(channel.lastScrapedAt).getTime() > 6 * 60 * 60 * 1000 && (
+                              <CachedBadge lastUpdated={channel.lastScrapedAt} />
+                          )}
                         </div>
                       </div>
                     </div>
@@ -393,5 +426,25 @@ export default function DashboardPage() {
         </div>
       </div>
     </div>
+
+      {/* Welcome Toast */}
+      {showToast && (
+        <div className="fixed bottom-6 right-6 z-50 animate-slide-up">
+          <div className="flex items-center gap-3 px-5 py-3.5 rounded-xl border border-[#64FFDA]/20 bg-[#0D1117] shadow-lg shadow-[#64FFDA]/5">
+            <span className="text-lg">🎉</span>
+            <div>
+              <div className="text-sm font-semibold text-white">Welcome!</div>
+              <div className="text-xs text-[#94A3B8]">Your personalized niches are ready.</div>
+            </div>
+            <button
+              onClick={() => setShowToast(false)}
+              className="ml-2 text-[#94A3B8] hover:text-white text-xs"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

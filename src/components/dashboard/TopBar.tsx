@@ -1,6 +1,65 @@
 "use client";
 
-import { Search, Bell, ChevronDown, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Search, Bell, ChevronDown, Sparkles, Activity } from "lucide-react";
+
+interface QuotaWidget {
+  mode: "api" | "degraded" | "scraper-only";
+  totalPercent: string;
+  totalRemaining: number;
+  resetsInSeconds: number;
+}
+
+function QuotaIndicator() {
+  const [data, setData] = useState<QuotaWidget | null>(null);
+
+  useEffect(() => {
+    fetch("/api/admin/quota?widget=true")
+      .then((r) => r.json())
+      .then(setData)
+      .catch(() => null);
+
+    // Refresh every 5 minutes
+    const interval = setInterval(() => {
+      fetch("/api/admin/quota?widget=true")
+        .then((r) => r.json())
+        .then(setData)
+        .catch(() => null);
+    }, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  if (!data) return null;
+
+  const modeColor =
+    data.mode === "api"
+      ? "text-[#4ADE80]"
+      : data.mode === "degraded"
+        ? "text-[#FCD34D]"
+        : "text-[#EF4444]";
+
+  const modeBg =
+    data.mode === "api"
+      ? "bg-[#4ADE80]/10 border-[#4ADE80]/20"
+      : data.mode === "degraded"
+        ? "bg-[#FCD34D]/10 border-[#FCD34D]/20"
+        : "bg-[#EF4444]/10 border-[#EF4444]/20";
+
+  const modeLabel =
+    data.mode === "api" ? "API" : data.mode === "degraded" ? "Degraded" : "Scraper";
+
+  return (
+    <div
+      className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs ${modeBg}`}
+      title={`YouTube quota: ${data.totalPercent} used · ${data.totalRemaining.toLocaleString()} units remaining`}
+    >
+      <Activity className={`w-3 h-3 ${modeColor}`} />
+      <span className={`font-medium ${modeColor}`}>{modeLabel}</span>
+      <span className="text-[#94A3B8]">{data.totalPercent}</span>
+    </div>
+  );
+}
 
 export function TopBar() {
   return (
@@ -20,6 +79,9 @@ export function TopBar() {
 
       {/* Right side */}
       <div className="flex items-center gap-3 ml-4">
+        {/* Quota status widget */}
+        <QuotaIndicator />
+
         {/* AI Credits */}
         <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#64FFDA]/10 border border-[#64FFDA]/20">
           <Sparkles className="w-3.5 h-3.5 text-[#64FFDA]" />

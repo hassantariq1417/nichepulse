@@ -46,6 +46,7 @@ export async function GET() {
           estimatedMonthlyRevenue: true,
           category: true,
           nicheCategory: { select: { name: true } },
+          lastScrapedAt: true,
         },
       }),
     ]);

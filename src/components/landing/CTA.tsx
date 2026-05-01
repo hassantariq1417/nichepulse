@@ -26,7 +26,7 @@ export function CTA() {
               <span className="text-[#64FFDA]">winning niche</span>?
             </h2>
             <p className="text-[#94A3B8] max-w-xl mx-auto text-lg mb-8">
-              Join 15,000+ creators who use NichePulse to make smarter content
+              Join the early access list and start making smarter content
               decisions. Start with 5 free searches per day.
             </p>
 

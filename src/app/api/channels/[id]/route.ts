@@ -1,13 +1,22 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { fetchChannel } from "@/lib/data/dataService";
 
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const channel = await prisma.channel.findUnique({
-      where: { id: params.id },
+    const { id } = params;
+
+    // 1. Try Prisma DB first (for channels we've already stored)
+    const dbChannel = await prisma.channel.findFirst({
+      where: {
+        OR: [
+          { id },
+          { youtubeId: id },
+        ],
+      },
       include: {
         nicheCategory: true,
         videos: {
@@ -17,44 +26,68 @@ export async function GET(
       },
     });
 
-    if (!channel) {
+    if (dbChannel) {
+      const viralVideos = dbChannel.videos.filter((v) => v.isViral).length;
+      const avgViews =
+        dbChannel.videos.length > 0
+          ? Math.round(
+              dbChannel.videos.reduce((sum, v) => sum + v.viewCount, 0) /
+                dbChannel.videos.length
+            )
+          : 0;
+      const avgLikes =
+        dbChannel.videos.length > 0
+          ? Math.round(
+              dbChannel.videos.reduce((sum, v) => sum + v.likeCount, 0) /
+                dbChannel.videos.length
+            )
+          : 0;
+      const engagementRate =
+        avgViews > 0 ? ((avgLikes / avgViews) * 100).toFixed(2) : "0";
+
+      return NextResponse.json({
+        channel: { ...dbChannel, viewCount: Number(dbChannel.viewCount) },
+        analytics: {
+          viralVideos,
+          avgViews,
+          avgLikes,
+          engagementRate,
+          totalVideosAnalyzed: dbChannel.videos.length,
+        },
+        source: "database",
+      });
+    }
+
+    // 2. Fall back to live YouTubei fetch (handles UC IDs and @handles)
+    const liveData = await fetchChannel(id);
+    if (!liveData) {
       return NextResponse.json({ error: "Channel not found" }, { status: 404 });
     }
 
-    // Compute extra analytics
-    const viralVideos = channel.videos.filter((v) => v.isViral).length;
     const avgViews =
-      channel.videos.length > 0
+      liveData.recentVideos.length > 0
         ? Math.round(
-            channel.videos.reduce((sum, v) => sum + v.viewCount, 0) /
-              channel.videos.length
+            liveData.recentVideos.reduce((sum, v) => sum + v.viewCount, 0) /
+              liveData.recentVideos.length
           )
         : 0;
-    const avgLikes =
-      channel.videos.length > 0
-        ? Math.round(
-            channel.videos.reduce((sum, v) => sum + v.likeCount, 0) /
-              channel.videos.length
-          )
-        : 0;
-    const engagementRate =
-      avgViews > 0 ? ((avgLikes / avgViews) * 100).toFixed(2) : "0";
 
     return NextResponse.json({
-      channel: {
-        ...channel,
-        viewCount: Number(channel.viewCount),
-      },
+      channel: liveData,
       analytics: {
-        viralVideos,
+        viralVideos: 0,
         avgViews,
-        avgLikes,
-        engagementRate,
-        totalVideosAnalyzed: channel.videos.length,
+        avgLikes: 0,
+        engagementRate: "0",
+        totalVideosAnalyzed: liveData.recentVideos.length,
       },
+      source: "youtubei",
     });
   } catch (error) {
     console.error("Channel detail error:", error);
-    return NextResponse.json({ error: "Failed to fetch channel" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch channel" },
+      { status: 500 }
+    );
   }
 }

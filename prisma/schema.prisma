@@ -141,3 +141,15 @@ model UserSavedNiche {
   @@unique([userId, channelId])
   @@index([userId])
 }
+
+model SearchCache {
+  id        String   @id @default(cuid())
+  cacheKey  String   @unique
+  query     String
+  results   Json
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([cacheKey])
+  @@index([expiresAt])
+}

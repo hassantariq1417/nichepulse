@@ -2,14 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import {
   searchChannels,
-  getChannelDetails,
-  getChannelVideos,
-  calculateChannelMetrics,
-  estimateRevenue,
+  getChannelData,
+} from "@/lib/data/youtubeiClient";
+import { pollChannelRSS, detectOutlier } from "@/lib/data/rssPoller";
+import {
   calculateNicheScore,
-} from "@/lib/youtube";
+  estimateMonthlyRevenue,
+  estimateMonthlyViews,
+} from "@/lib/scoring";
 
-// POST /api/youtube/ingest — Ingest channels for a given niche query
+// POST /api/youtube/ingest — Ingest channels for a given niche query (FREE)
 export async function POST(request: NextRequest) {
   try {
     const { query, nicheSlug, maxChannels = 15 } = await request.json();
@@ -21,14 +23,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!process.env.YOUTUBE_API_KEY) {
-      return NextResponse.json(
-        { error: "YOUTUBE_API_KEY not configured. Add your key to .env.local — see the setup guide in the artifacts folder." },
-        { status: 500 }
-      );
-    }
-
-    // Find the niche category
     const niche = await prisma.nicheCategory.findUnique({
       where: { slug: nicheSlug },
     });
@@ -40,61 +34,75 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Step 1: Search YouTube for channels
-    const channelIds = await searchChannels(query, maxChannels);
+    // Step 1: Search for channels (FREE — YouTubei)
+    const searchResults = await searchChannels(query, maxChannels);
 
-    if (channelIds.length === 0) {
+    if (searchResults.length === 0) {
       return NextResponse.json(
         { error: "No channels found for this query" },
         { status: 404 }
       );
     }
 
-    // Step 2: Get channel details
-    const channelDetails = await getChannelDetails(channelIds);
-
     let ingested = 0;
     let skipped = 0;
     let updated = 0;
     const errors: string[] = [];
 
-    for (const channel of channelDetails) {
+    for (const searchResult of searchResults) {
       try {
-        // Step 3: Get recent videos for this channel
-        const videos = await getChannelVideos(channel.id, 10);
+        // Step 2: Get full channel data (FREE — YouTubei)
+        const channel = await getChannelData(searchResult.channelId);
+        if (!channel) {
+          skipped++;
+          continue;
+        }
 
-        // Step 4: Calculate metrics
-        const metrics = calculateChannelMetrics(videos);
-        const revenue = estimateRevenue(
-          channel.viewCount,
-          channel.videoCount,
-          niche.estimatedCPM || 8.0
-        );
-        const nicheScore = calculateNicheScore(
+        // Step 3: Enrich with RSS feed (FREE — public XML)
+        const rss = await pollChannelRSS(channel.channelId);
+        const uploadFrequency = rss?.uploadFrequency || 7;
+
+        // Step 4: Calculate scoring
+        const avgViews =
+          channel.recentVideos.length > 0
+            ? channel.recentVideos.reduce((sum, v) => sum + v.viewCount, 0) /
+              channel.recentVideos.length
+            : 0;
+
+        const nicheScore = calculateNicheScore({
+          subscriberCount: channel.subscriberCount,
+          videoCount: channel.videoCount,
+          uploadFrequency,
+          recentVideos: channel.recentVideos,
+          avgViews,
+        });
+
+        const monthlyViews = estimateMonthlyViews(
           channel.subscriberCount,
-          channel.viewCount,
-          channel.videoCount,
-          metrics.growthRate30d,
-          metrics.uploadFrequency
+          uploadFrequency
+        );
+        const revenue = estimateMonthlyRevenue(monthlyViews, niche.slug);
+
+        const isOutlier = detectOutlier(
+          channel.subscriberCount,
+          channel.recentVideos
         );
 
-        // Determine channel format from video durations
-        const format = metrics.uploadFrequency > 5 ? "SHORT_FORM" : 
-                       metrics.uploadFrequency > 2 ? "BOTH" : "LONG_FORM";
-
-        // Channel age in months
-        const channelAge = Math.floor(
-          (Date.now() - new Date(channel.publishedAt).getTime()) /
-            (30 * 24 * 60 * 60 * 1000)
-        );
+        // Determine format
+        const format =
+          uploadFrequency > 5
+            ? "SHORT_FORM"
+            : uploadFrequency > 2
+              ? "BOTH"
+              : "LONG_FORM";
 
         // Step 5: Upsert into database
         const existingChannel = await prisma.channel.findUnique({
-          where: { youtubeId: channel.id },
+          where: { youtubeId: channel.channelId },
         });
 
         const channelData = {
-          title: channel.title,
+          title: channel.channelTitle,
           description: channel.description.slice(0, 2000),
           thumbnailUrl: channel.thumbnailUrl,
           subscriberCount: channel.subscriberCount,
@@ -104,70 +112,71 @@ export async function POST(request: NextRequest) {
           format: format as "LONG_FORM" | "SHORT_FORM" | "BOTH",
           estimatedMonthlyRevenue: revenue,
           nicheScore,
-          growthRate7d: metrics.growthRate7d,
-          growthRate30d: metrics.growthRate30d,
-          viewsLast48h: metrics.viewsLast48h,
-          uploadFrequency: metrics.uploadFrequency,
-          isOutlier: metrics.isOutlier,
-          isTrending: metrics.isTrending,
+          growthRate7d: 0,
+          growthRate30d: 0,
+          viewsLast48h: 0,
+          uploadFrequency,
+          isOutlier,
+          isTrending: false,
           country: channel.country,
-          channelAge,
           nicheCategoryId: niche.id,
           lastScrapedAt: new Date(),
         };
 
         if (existingChannel) {
           await prisma.channel.update({
-            where: { youtubeId: channel.id },
+            where: { youtubeId: channel.channelId },
             data: channelData,
           });
           updated++;
         } else {
           await prisma.channel.create({
             data: {
-              youtubeId: channel.id,
+              youtubeId: channel.channelId,
               ...channelData,
             },
           });
           ingested++;
         }
 
-        // Step 6: Upsert videos
-        for (const video of videos) {
-          const hoursAge = Math.max(
-            (Date.now() - new Date(video.publishedAt).getTime()) /
-              (60 * 60 * 1000),
-            1
-          );
-          const viewsPerHour = parseFloat(
-            (video.viewCount / hoursAge).toFixed(1)
-          );
-          const isViral = viewsPerHour > 500 || video.viewCount > 1000000;
+        // Step 6: Upsert video insights from recent videos
+        const dbChannel = await prisma.channel.findUnique({
+          where: { youtubeId: channel.channelId },
+        });
 
-          const dbChannel = await prisma.channel.findUnique({
-            where: { youtubeId: channel.id },
-          });
+        if (dbChannel) {
+          for (const video of channel.recentVideos.slice(0, 10)) {
+            if (!video.videoId) continue;
 
-          if (dbChannel) {
+            const hoursAge = video.publishedAt
+              ? Math.max(
+                  (Date.now() - video.publishedAt.getTime()) / 3_600_000,
+                  1
+                )
+              : 24;
+
+            const viewsPerHour = parseFloat(
+              (video.viewCount / hoursAge).toFixed(1)
+            );
+            const isViral = viewsPerHour > 500 || video.viewCount > 1_000_000;
+
             await prisma.videoInsight.upsert({
-              where: { youtubeVideoId: video.id },
+              where: { youtubeVideoId: video.videoId },
               create: {
                 channelId: dbChannel.id,
-                youtubeVideoId: video.id,
+                youtubeVideoId: video.videoId,
                 title: video.title,
                 viewCount: video.viewCount,
-                likeCount: video.likeCount,
-                commentCount: video.commentCount,
-                publishedAt: new Date(video.publishedAt),
+                likeCount: 0,
+                commentCount: 0,
+                publishedAt: video.publishedAt || new Date(),
                 isViral,
                 viewsPerHour,
-                thumbnail: video.thumbnail,
+                thumbnail: video.thumbnailUrl,
               },
               update: {
                 title: video.title,
                 viewCount: video.viewCount,
-                likeCount: video.likeCount,
-                commentCount: video.commentCount,
                 isViral,
                 viewsPerHour,
               },
@@ -175,14 +184,14 @@ export async function POST(request: NextRequest) {
           }
         }
 
-        // Small delay to respect rate limits
-        await new Promise((r) => setTimeout(r, 200));
+        // Respect rate limits
+        await new Promise((r) => setTimeout(r, 300));
       } catch (channelError) {
         const msg =
           channelError instanceof Error
             ? channelError.message
             : "Unknown error";
-        errors.push(`${channel.title}: ${msg}`);
+        errors.push(`${searchResult.channelTitle}: ${msg}`);
         skipped++;
       }
     }
@@ -190,7 +199,7 @@ export async function POST(request: NextRequest) {
     // Step 7: Update niche category stats
     const nicheChannels = await prisma.channel.findMany({
       where: { nicheCategoryId: niche.id },
-      select: { nicheScore: true, estimatedMonthlyRevenue: true },
+      select: { nicheScore: true },
     });
 
     const avgScore =
@@ -212,11 +221,12 @@ export async function POST(request: NextRequest) {
       summary: {
         query,
         niche: niche.name,
-        channelsFound: channelDetails.length,
+        channelsFound: searchResults.length,
         newChannels: ingested,
         updatedChannels: updated,
         skipped,
         errors: errors.length > 0 ? errors : undefined,
+        cost: "$0 (YouTubei + RSS)",
       },
     });
   } catch (error) {
@@ -251,5 +261,6 @@ export async function GET() {
     totalVideos,
     niches,
     lastScrapedAt: lastScraped?.lastScrapedAt || null,
+    dataSource: "YouTubei + RSS (free)",
   });
 }

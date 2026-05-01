@@ -11,7 +11,8 @@
     "db:seed": "npx prisma db seed",
     "db:studio": "npx prisma studio",
     "db:generate": "npx prisma generate",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "worker:scraper": "npx tsx workers/scraper.worker.ts"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"
@@ -37,8 +38,13 @@
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@tanstack/react-query": "^5.100.7",
+    "bullmq": "^5.76.4",
+    "cheerio": "^1.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^17.4.2",
+    "fast-xml-parser": "^5.7.2",
+    "ioredis": "^5.10.1",
     "lucide-react": "^1.14.0",
     "next": "14.2.35",
     "react": "^18",
