@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchTrending } from "@/lib/data/dataService";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   try {
     const category = request.nextUrl.searchParams.get("category") || undefined;

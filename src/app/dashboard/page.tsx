@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   TrendingUp,
@@ -114,7 +114,7 @@ function getCompetitionColor(level: string) {
   return "text-[#FCD34D] bg-[#FCD34D]/10";
 }
 
-export default function DashboardPage() {
+function DashboardContent() {
   const [data, setData] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [showToast, setShowToast] = useState(false);
@@ -446,5 +446,13 @@ export default function DashboardPage() {
         </div>
       )}
     </>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#080B10]" />}>
+      <DashboardContent />
+    </Suspense>
   );
 }
