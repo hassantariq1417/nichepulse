@@ -30,8 +30,6 @@ import {
   setCachedTrending,
   getCachedSimilar,
   setCachedSimilar,
-  getCachedChannelVideos,
-  setCachedChannelVideos,
   batchGetCachedChannels,
   incrementDailyStat,
   withCache,
@@ -41,8 +39,6 @@ import {
 import {
   calculateNicheScore,
   estimateMonthlyRevenue,
-  estimateMonthlyViews,
-  getScoreLabel,
 } from "@/lib/scoring";
 
 // ─── Re-export types for convenience ─────────────────────────────

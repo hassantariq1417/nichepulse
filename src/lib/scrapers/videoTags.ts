@@ -10,7 +10,6 @@
 
 import {
   getChannelVideos,
-  type VideoData,
 } from "@/lib/data/youtubeiClient";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

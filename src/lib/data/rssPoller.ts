@@ -80,6 +80,7 @@ export async function pollChannelRSS(channelId: string): Promise<RSSChannelData 
     const rawEntries = parsed.feed.entry;
 
     // Handle single entry or array
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const entries: any[] = Array.isArray(rawEntries)
       ? rawEntries
       : rawEntries

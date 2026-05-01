@@ -13,9 +13,9 @@ import { prisma } from "@/lib/prisma";
 import {
   getScraperQueue,
   enqueueScrapeCategory,
-  enqueueRefreshTrending,
+  // enqueueRefreshTrending is used in registerSchedules via getScraperQueue
 } from "@/lib/jobs/scraperQueue";
-import { quotaManager } from "@/lib/youtube/quotaManager";
+// quotaManager used for runtime quota checks
 
 /**
  * Register all repeatable cron jobs.

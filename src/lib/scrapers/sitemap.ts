@@ -25,13 +25,6 @@ const parser = new XMLParser({
 });
 
 // ─── Channel ID/Handle Extraction ────────────────────────────────
-
-const CHANNEL_URL_PATTERNS = [
-  /youtube\.com\/@([\w.-]+)/,
-  /youtube\.com\/channel\/(UC[\w-]{22})/,
-  /youtube\.com\/c\/([\w.-]+)/,
-];
-
 function extractFromUrl(url: string): { type: "id" | "handle"; value: string } | null {
   // UC-style channel ID
   const idMatch = url.match(/youtube\.com\/channel\/(UC[\w-]{22})/);
