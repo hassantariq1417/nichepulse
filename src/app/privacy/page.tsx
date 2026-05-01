@@ -1,121 +1,119 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
   title: "Privacy Policy | NichePulse",
-  description: "How NichePulse collects, stores, and protects your data.",
+  description: "How NichePulse collects, uses, and protects your information.",
 };
+
+const sections = [
+  {
+    title: "1. Introduction",
+    content: [
+      'NichePulse ("we", "us", "our") operates nichepulse.io.',
+      "This policy explains how we collect, use, and protect your information. Last updated: May 2026.",
+    ],
+  },
+  {
+    title: "2. Information We Collect",
+    items: [
+      "Account info: email address, name (via Google OAuth or email signup)",
+      "Usage data: searches performed, channels viewed, features used",
+      "YouTube public data: we analyze publicly available YouTube channel data (subscriber counts, view counts, upload frequency). We do not access your private YouTube account data.",
+      "Payment info: processed by Stripe. We never see or store your credit card details.",
+    ],
+  },
+  {
+    title: "3. How We Use Your Information",
+    items: [
+      "To provide and improve the NichePulse service",
+      "To send product updates (you can unsubscribe anytime)",
+      "To analyze usage patterns and improve features",
+      "We NEVER sell your data to third parties",
+    ],
+  },
+  {
+    title: "4. Data Storage",
+    items: [
+      "Account data stored on Supabase (PostgreSQL)",
+      "Servers located in the United States",
+      "Data encrypted at rest and in transit",
+    ],
+  },
+  {
+    title: "5. Cookies",
+    items: [
+      "We use essential cookies for authentication only",
+      "No advertising cookies",
+      "No third-party tracking pixels",
+    ],
+  },
+  {
+    title: "6. Your Rights",
+    items: [
+      "Access your data: email privacy@nichepulse.io",
+      "Delete your account: Settings → Delete Account",
+      "Export your data: available in Settings",
+      "GDPR: EU users have additional rights under GDPR",
+    ],
+  },
+  {
+    title: "7. Third-Party Services",
+    items: [
+      "Clerk (authentication)",
+      "Stripe (payments)",
+      "Supabase (database)",
+      "Anthropic Claude (AI features)",
+      "Upstash (caching)",
+    ],
+    content: ["Each has their own privacy policy."],
+  },
+  {
+    title: "8. Contact",
+    content: ["Email: privacy@nichepulse.io"],
+  },
+];
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-[#080B10] text-[#CBD5E1]">
-      <div className="max-w-3xl mx-auto px-6 py-16">
+    <main className="min-h-screen bg-[#080B10] text-[#CBD5E1]">
+      <div className="mx-auto max-w-[800px] px-6 py-12 sm:py-16">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm text-[#94A3B8] hover:text-[#64FFDA] transition-colors mb-12"
+          className="mb-12 inline-flex text-sm font-medium text-[#94A3B8] transition-colors hover:text-[#64FFDA]"
         >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Home
+          ← Back to Home
         </Link>
 
-        <h1 className="text-4xl font-bold text-white mb-2 font-[family-name:var(--font-syne)]">
-          Privacy Policy
-        </h1>
-        <p className="text-sm text-[#94A3B8] mb-12">
-          Last updated: May 1, 2026
-        </p>
+        <header className="mb-12">
+          <h1 className="font-[family-name:var(--font-syne)] text-4xl font-bold tracking-tight text-[#64FFDA] sm:text-5xl">
+            Privacy Policy
+          </h1>
+        </header>
 
-        <div className="space-y-10 text-base leading-7">
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-3 font-[family-name:var(--font-syne)]">
-              1. Information We Collect
-            </h2>
-            <p className="mb-3">
-              When you use NichePulse, we may collect the following categories of information:
-            </p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>
-                <strong className="text-white">Account Information:</strong> Your name, email address, and avatar when you create an account.
-              </li>
-              <li>
-                <strong className="text-white">Usage Data:</strong> Pages visited, features used, search queries, and interaction patterns within the dashboard.
-              </li>
-              <li>
-                <strong className="text-white">YouTube Public Data:</strong> We access publicly available YouTube data (channel names, subscriber counts, view counts, video metadata) through the YouTube Data API v3. We do not access any private YouTube account data.
-              </li>
-            </ul>
-          </section>
+        <div className="space-y-10 text-base leading-[1.8]">
+          {sections.map((section) => (
+            <section key={section.title}>
+              <h2 className="mb-4 font-[family-name:var(--font-syne)] text-2xl font-semibold text-[#64FFDA]">
+                {section.title}
+              </h2>
 
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-3 font-[family-name:var(--font-syne)]">
-              2. How We Store Your Data
-            </h2>
-            <p className="mb-3">
-              Your data is stored securely using industry-standard practices:
-            </p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>All user and analytics data is stored in a PostgreSQL database hosted on Neon (cloud-managed PostgreSQL).</li>
-              <li>Data is encrypted in transit using TLS/SSL and at rest via the hosting provider&apos;s encryption standards.</li>
-              <li>We do <strong className="text-white">not</strong> sell, rent, or share your personal data with third parties for marketing purposes.</li>
-            </ul>
-          </section>
+              {section.content?.map((paragraph) => (
+                <p key={paragraph} className="mb-3">
+                  {paragraph}
+                </p>
+              ))}
 
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-3 font-[family-name:var(--font-syne)]">
-              3. Cookies &amp; Analytics
-            </h2>
-            <p>
-              NichePulse uses essential cookies to maintain your session and authentication state. We may use privacy-respecting analytics tools to understand aggregate usage patterns. We do not use invasive tracking pixels or sell data to ad networks.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-3 font-[family-name:var(--font-syne)]">
-              4. Your Rights
-            </h2>
-            <p className="mb-3">You have the right to:</p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li><strong className="text-white">Access:</strong> Request a copy of all data we hold about you.</li>
-              <li><strong className="text-white">Delete:</strong> Request permanent deletion of your account and all associated data.</li>
-              <li><strong className="text-white">Export:</strong> Request an export of your data in a machine-readable format.</li>
-              <li><strong className="text-white">Correct:</strong> Update or correct any inaccurate information.</li>
-            </ul>
-            <p className="mt-3">
-              To exercise any of these rights, contact us at the email below.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-3 font-[family-name:var(--font-syne)]">
-              5. Third-Party Services
-            </h2>
-            <p>
-              We use the following third-party services to operate NichePulse: Vercel (hosting), Neon (database), YouTube Data API v3 (public data), and Google Gemini (AI features). Each provider has their own privacy policies, and we encourage you to review them.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-3 font-[family-name:var(--font-syne)]">
-              6. Changes to This Policy
-            </h2>
-            <p>
-              We may update this Privacy Policy from time to time. If we make material changes, we will notify you via email or through the platform. Continued use of NichePulse after changes constitutes acceptance.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-3 font-[family-name:var(--font-syne)]">
-              7. Contact
-            </h2>
-            <p>
-              If you have any questions about this Privacy Policy, please contact us at{" "}
-              <a href="mailto:privacy@nichepulse.io" className="text-[#64FFDA] hover:underline">
-                privacy@nichepulse.io
-              </a>.
-            </p>
-          </section>
+              {section.items && (
+                <ul className="list-disc space-y-2 pl-6">
+                  {section.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ))}
         </div>
       </div>
-    </div>
+    </main>
   );
 }

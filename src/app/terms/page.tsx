@@ -1,133 +1,131 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
   title: "Terms of Service | NichePulse",
   description: "Terms and conditions for using the NichePulse platform.",
 };
 
+const sections = [
+  {
+    title: "1. Acceptance of Terms",
+    content: [
+      "By using NichePulse you agree to these terms.",
+      "If you don't agree, don't use the service.",
+    ],
+  },
+  {
+    title: "2. Description of Service",
+    content: [
+      "NichePulse provides YouTube niche research and analytics tools for content creators. We analyze publicly available YouTube data to provide niche scoring and recommendations.",
+    ],
+  },
+  {
+    title: "3. User Accounts",
+    items: [
+      "You must provide accurate information when signing up",
+      "You are responsible for your account security",
+      "One account per person",
+      "You must be 16+ to use NichePulse",
+    ],
+  },
+  {
+    title: "4. Acceptable Use",
+    content: ["You may NOT:"],
+    items: [
+      "Resell or redistribute NichePulse data",
+      "Use the service to spam or harass other creators",
+      "Attempt to scrape or extract our database",
+      "Use automated tools to abuse the service",
+      "Misrepresent our data as your own proprietary research",
+    ],
+  },
+  {
+    title: "5. Subscription and Billing",
+    items: [
+      "Pro plan billed monthly or annually",
+      "Cancel anytime — access continues until end of period",
+      "14-day refund policy: email support@nichepulse.io",
+      "Prices may change with 30 days notice to existing users",
+      "Early Bird pricing is locked for life for qualifying users",
+    ],
+  },
+  {
+    title: "6. Data and Accuracy",
+    items: [
+      "YouTube data is sourced from public sources",
+      "Revenue estimates are approximations, not guarantees",
+      "NicheScores are algorithmic estimates, not financial advice",
+      "We do not guarantee any channel growth or income results",
+    ],
+  },
+  {
+    title: "7. Intellectual Property",
+    items: [
+      "NichePulse owns the platform, design, and algorithms",
+      "You own any content you create using our tools",
+      "Our data may not be redistributed without permission",
+    ],
+  },
+  {
+    title: "8. Limitation of Liability",
+    content: [
+      "NichePulse is not liable for any business decisions made based on our data. Use insights as one of many inputs, not as sole decision-making criteria.",
+    ],
+  },
+  {
+    title: "9. Termination",
+    content: [
+      "We may suspend accounts that violate these terms.",
+      "You may delete your account at any time in Settings.",
+    ],
+  },
+  {
+    title: "10. Contact",
+    content: ["support@nichepulse.io"],
+  },
+];
+
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-[#080B10] text-[#CBD5E1]">
-      <div className="max-w-3xl mx-auto px-6 py-16">
+    <main className="min-h-screen bg-[#080B10] text-[#CBD5E1]">
+      <div className="mx-auto max-w-[800px] px-6 py-12 sm:py-16">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm text-[#94A3B8] hover:text-[#64FFDA] transition-colors mb-12"
+          className="mb-12 inline-flex text-sm font-medium text-[#94A3B8] transition-colors hover:text-[#64FFDA]"
         >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Home
+          ← Back to Home
         </Link>
 
-        <h1 className="text-4xl font-bold text-white mb-2 font-[family-name:var(--font-syne)]">
-          Terms of Service
-        </h1>
-        <p className="text-sm text-[#94A3B8] mb-12">
-          Last updated: May 1, 2026
-        </p>
+        <header className="mb-12">
+          <h1 className="font-[family-name:var(--font-syne)] text-4xl font-bold tracking-tight text-[#64FFDA] sm:text-5xl">
+            Terms of Service
+          </h1>
+        </header>
 
-        <div className="space-y-10 text-base leading-7">
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-3 font-[family-name:var(--font-syne)]">
-              1. Acceptance of Terms
-            </h2>
-            <p>
-              By accessing or using NichePulse (&quot;the Service&quot;), you agree to be bound by these Terms of Service. If you do not agree to these terms, do not use the Service. NichePulse reserves the right to update these terms at any time, with notice provided through the platform or via email.
-            </p>
-          </section>
+        <div className="space-y-10 text-base leading-[1.8]">
+          {sections.map((section) => (
+            <section key={section.title}>
+              <h2 className="mb-4 font-[family-name:var(--font-syne)] text-2xl font-semibold text-[#64FFDA]">
+                {section.title}
+              </h2>
 
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-3 font-[family-name:var(--font-syne)]">
-              2. Acceptable Use
-            </h2>
-            <p className="mb-3">You agree not to:</p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>Use automated scripts, bots, or scrapers to extract data from NichePulse beyond the provided API or dashboard interface.</li>
-              <li>Resell, redistribute, or sublicense any data, insights, or analytics obtained through the platform.</li>
-              <li>Attempt to reverse-engineer, decompile, or exploit the platform&apos;s algorithms or scoring systems.</li>
-              <li>Use the Service for any illegal purpose or in violation of YouTube&apos;s Terms of Service.</li>
-              <li>Create multiple free accounts to circumvent usage limits.</li>
-            </ul>
-            <p className="mt-3">
-              Violation of these terms may result in immediate account suspension or termination without notice.
-            </p>
-          </section>
+              {section.content?.map((paragraph) => (
+                <p key={paragraph} className="mb-3">
+                  {paragraph}
+                </p>
+              ))}
 
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-3 font-[family-name:var(--font-syne)]">
-              3. Subscriptions &amp; Billing
-            </h2>
-            <p className="mb-3">
-              NichePulse offers both free and paid subscription plans. For paid plans:
-            </p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>Subscriptions are billed monthly or annually, as selected at checkout.</li>
-              <li>You may cancel your subscription at any time. Cancellation takes effect at the end of the current billing period.</li>
-              <li>No prorated refunds are issued for partial billing periods.</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-3 font-[family-name:var(--font-syne)]">
-              4. Refund Policy
-            </h2>
-            <p>
-              We offer a <strong className="text-white">14-day money-back guarantee</strong> on all paid plans. If you are unsatisfied with the Service within the first 14 days of your paid subscription, contact us at{" "}
-              <a href="mailto:support@nichepulse.io" className="text-[#64FFDA] hover:underline">
-                support@nichepulse.io
-              </a>{" "}
-              for a full refund. After 14 days, all charges are non-refundable.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-3 font-[family-name:var(--font-syne)]">
-              5. Disclaimer of Warranties
-            </h2>
-            <p>
-              NichePulse provides data, analytics, and AI-generated recommendations for informational purposes only. We make <strong className="text-white">no guarantees</strong> of YouTube success, revenue generation, subscriber growth, or any specific outcome from using the Service. All niche scores, revenue estimates, and growth projections are approximations based on publicly available data and should not be treated as financial advice.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-3 font-[family-name:var(--font-syne)]">
-              6. Limitation of Liability
-            </h2>
-            <p>
-              To the maximum extent permitted by law, NichePulse and its affiliates shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of the Service, including but not limited to loss of revenue, data, or business opportunity.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-3 font-[family-name:var(--font-syne)]">
-              7. Intellectual Property
-            </h2>
-            <p>
-              All content, branding, algorithms, and design elements of NichePulse are the intellectual property of NichePulse and its licensors. You may not copy, reproduce, or distribute any part of the Service without prior written consent.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-3 font-[family-name:var(--font-syne)]">
-              8. Governing Law
-            </h2>
-            <p>
-              These Terms of Service shall be governed by and construed in accordance with the laws of the State of Delaware, United States, without regard to its conflict of law provisions. Any disputes arising under these terms shall be subject to the exclusive jurisdiction of the courts located in Delaware.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-3 font-[family-name:var(--font-syne)]">
-              9. Contact
-            </h2>
-            <p>
-              For questions about these Terms, please contact us at{" "}
-              <a href="mailto:support@nichepulse.io" className="text-[#64FFDA] hover:underline">
-                support@nichepulse.io
-              </a>.
-            </p>
-          </section>
+              {section.items && (
+                <ul className="list-disc space-y-2 pl-6">
+                  {section.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ))}
         </div>
       </div>
-    </div>
+    </main>
   );
 }

@@ -63,8 +63,7 @@ export function Features() {
             <span className="text-[#64FFDA]">dominate</span> YouTube
           </h2>
           <p className="text-[#94A3B8] max-w-2xl mx-auto text-lg">
-            From niche discovery to content generation — one platform replaces
-            five tools. Built for faceless channel creators who move fast.
+            From niche discovery to content generation — one platform built for faceless channel research. Built for creators who move fast.
           </p>
         </div>
 
@@ -73,7 +72,7 @@ export function Features() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="group relative rounded-xl border border-[#1E293B] bg-[#0D1117]/60 p-6 hover:border-[#64FFDA]/30 transition-all duration-300 hover:-translate-y-1"
+              className="group relative h-full rounded-xl border border-[#1E293B] bg-[#0D1117]/60 p-6 hover:border-[#64FFDA]/30 transition-all duration-300 hover:-translate-y-1"
             >
               {/* Tag */}
               <div

@@ -5,63 +5,48 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
 
-function AnimatedCounter({ target, suffix = "", duration = 2000 }: { target: number; suffix?: string; duration?: number }) {
+function useCountUp(target: number, duration: number = 2000) {
   const [count, setCount] = useState(0);
-  const [mounted, setMounted] = useState(false);
-  const ref = useRef<HTMLSpanElement>(null);
-  const started = useRef(false);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted || !ref.current) return;
-
-    const startAnimation = () => {
-      if (started.current) return;
-      started.current = true;
-
-      let rafId: number;
-      let startTime: number | null = null;
-
-      const animate = (timestamp: number) => {
-        if (!startTime) startTime = timestamp;
-        const elapsed = timestamp - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        // Cubic easeOut
-        const eased = 1 - Math.pow(1 - progress, 3);
-        setCount(Math.floor(eased * target));
-        if (progress < 1) {
-          rafId = requestAnimationFrame(animate);
-        } else {
-          setCount(target);
-        }
-      };
-
-      rafId = requestAnimationFrame(animate);
-      return () => cancelAnimationFrame(rafId);
-    };
-
     const el = ref.current;
+    if (!el) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          startAnimation();
-          observer.disconnect();
-        }
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+
+        const startTime = performance.now();
+        const tick = (now: number) => {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+          setCount(Math.floor(eased * target));
+          if (progress < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
       },
       { threshold: 0.1 }
     );
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [mounted, target, duration]);
+  }, [target, duration]);
 
+  return { count, ref };
+}
+
+function StatItem({ target, suffix, label, className = "text-white" }: { target: number; suffix: string; label: string; className?: string }) {
+  const { count, ref } = useCountUp(target);
   return (
-    <span ref={ref} className="font-mono tabular-nums">
-      {mounted ? `${count.toLocaleString()}${suffix}` : `0${suffix}`}
-    </span>
+    <div ref={ref} className="text-center">
+      <span className={`block text-2xl sm:text-3xl font-bold font-mono tabular-nums ${className}`}>
+        {count}{suffix}
+      </span>
+      <span className="block text-xs sm:text-sm text-[#94A3B8] mt-1">{label}</span>
+    </div>
   );
 }
 
@@ -114,7 +99,7 @@ export function Hero() {
                 />
               </svg>
             </span>{" "}
-            Before Everyone Else
+            Before Everyone Else.
           </h1>
 
           {/* Subheadline */}
@@ -147,24 +132,9 @@ export function Hero() {
 
           {/* Stats Row */}
           <div className="grid grid-cols-3 gap-8 max-w-lg mx-auto animate-slide-up" style={{ animationDelay: "0.3s" }}>
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-white">
-                <AnimatedCounter target={210} suffix="+" />
-              </div>
-              <div className="text-xs sm:text-sm text-[#94A3B8] mt-1">Channels Tracked</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-white">
-                <AnimatedCounter target={15} suffix="" />
-              </div>
-              <div className="text-xs sm:text-sm text-[#94A3B8] mt-1">Niches Indexed</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-[#64FFDA]">
-                <AnimatedCounter target={1050} suffix="+" />
-              </div>
-              <div className="text-xs sm:text-sm text-[#94A3B8] mt-1">Video Insights</div>
-            </div>
+            <StatItem target={98} suffix="M+" label="Channels Analyzed" />
+            <StatItem target={41} suffix="" label="Countries" />
+            <StatItem target={100} suffix="K+" label="Active Creators" className="text-[#64FFDA]" />
           </div>
         </div>
 
