@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum ChannelFormat {
+  LONG_FORM
+  SHORT_FORM
+  BOTH
+}
+
+enum CompetitionLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TrendDirection {
+  UP
+  STABLE
+  DOWN
+}
+
+enum UserPlan {
+  FREE
+  STARTER
+  PRO
+  TEAM
+}
+
+model User {
+  id               String   @id @default(cuid())
+  clerkId          String   @unique
+  email            String   @unique
+  name             String?
+  imageUrl         String?
+  plan             UserPlan @default(FREE)
+  searchesUsedToday Int     @default(0)
+  lastSearchReset  DateTime @default(now())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  savedNiches UserSavedNiche[]
+
+  @@index([clerkId])
+}
+
+model Channel {
+  id                     String        @id @default(cuid())
+  youtubeId              String        @unique
+  title                  String
+  description            String?       @db.Text
+  thumbnailUrl           String?
+  subscriberCount        Int           @default(0)
+  viewCount              BigInt        @default(0)
+  videoCount             Int           @default(0)
+  category               String?
+  format                 ChannelFormat @default(BOTH)
+  estimatedMonthlyRevenue Float        @default(0)
+  nicheScore             Float         @default(0)
+  growthRate7d           Float         @default(0)
+  growthRate30d          Float         @default(0)
+  viewsLast48h           Int           @default(0)
+  uploadFrequency        Float         @default(0)
+  isOutlier              Boolean       @default(false)
+  isTrending             Boolean       @default(false)
+  country                String?
+  channelAge             Int?          // months since creation
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+  lastScrapedAt          DateTime?
+
+  nicheCategoryId String?
+  nicheCategory   NicheCategory? @relation(fields: [nicheCategoryId], references: [id])
+
+  videos      VideoInsight[]
+  savedBy     UserSavedNiche[]
+
+  @@index([category])
+  @@index([nicheScore])
+  @@index([isOutlier])
+  @@index([isTrending])
+  @@index([nicheCategoryId])
+}
+
+model NicheCategory {
+  id               String           @id @default(cuid())
+  name             String           @unique
+  slug             String           @unique
+  description      String?          @db.Text
+  averageNicheScore Float           @default(0)
+  channelCount     Int              @default(0)
+  competitionLevel CompetitionLevel @default(MEDIUM)
+  trendDirection   TrendDirection   @default(STABLE)
+  estimatedCPM     Float            @default(0)
+  iconEmoji        String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  channels Channel[]
+
+  @@index([slug])
+}
+
+model VideoInsight {
+  id             String   @id @default(cuid())
+  channelId      String
+  youtubeVideoId String   @unique
+  title          String
+  viewCount      Int      @default(0)
+  likeCount      Int      @default(0)
+  commentCount   Int      @default(0)
+  publishedAt    DateTime
+  isViral        Boolean  @default(false)
+  viewsPerHour   Float    @default(0)
+  thumbnail      String?
+  createdAt      DateTime @default(now())
+
+  channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@index([channelId])
+  @@index([isViral])
+  @@index([viewCount])
+}
+
+model UserSavedNiche {
+  id        String   @id @default(cuid())
+  userId    String
+  channelId String
+  notes     String?  @db.Text
+  savedAt   DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channel Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, channelId])
+  @@index([userId])
+}
