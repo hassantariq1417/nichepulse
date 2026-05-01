@@ -99,7 +99,7 @@ export function Hero() {
                 />
               </svg>
             </span>{" "}
-            Before Everyone Else.
+            Before Everyone Else!
           </h1>
 
           {/* Subheadline */}
