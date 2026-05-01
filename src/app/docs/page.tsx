@@ -1,47 +1,21 @@
 import Link from "next/link";
-import { ArrowLeft, BookOpen } from "lucide-react";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Documentation | NichePulse",
-  description: "NichePulse documentation and guides.",
-};
+export const metadata: Metadata = { title: "Documentation — NichePulse" };
 
 export default function DocsPage() {
   return (
-    <div className="min-h-screen bg-[#080B10] text-[#CBD5E1]">
-      <div className="max-w-3xl mx-auto px-6 py-16">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-sm text-[#94A3B8] hover:text-[#64FFDA] transition-colors mb-12"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Home
-        </Link>
-
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-[#64FFDA]/10 flex items-center justify-center">
-            <BookOpen className="w-6 h-6 text-[#64FFDA]" />
-          </div>
-          <div>
-            <h1 className="text-4xl font-bold text-white font-[family-name:var(--font-syne)]">
-              Documentation
-            </h1>
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-[#1E293B] bg-[#0D1117]/60 p-8 mt-8">
-          <p className="text-base leading-7 mb-4">
-            Full documentation is coming soon. We&apos;re working on comprehensive guides covering niche research, channel analysis, content generation, and API usage.
-          </p>
-          <p className="text-base leading-7">
-            In the meantime, if you need help or have questions about NichePulse, email us at{" "}
-            <a href="mailto:hello@nichepulse.io" className="text-[#64FFDA] hover:underline">
-              hello@nichepulse.io
-            </a>{" "}
-            for early access support.
+    <main style={{ background: "#080B10", minHeight: "100vh", color: "#CBD5E1", fontSize: "16px", lineHeight: 1.8 }}>
+      <div style={{ maxWidth: "800px", margin: "0 auto", padding: "60px 24px" }}>
+        <Link href="/" style={{ color: "#64FFDA", textDecoration: "none", fontSize: "14px" }}>← Back to Home</Link>
+        <h1 style={{ fontFamily: "var(--font-syne), sans-serif", color: "#64FFDA", fontSize: "2.5rem", fontWeight: 700, margin: "32px 0 16px" }}>Documentation</h1>
+        <p style={{ color: "#94A3B8", fontSize: "1.1rem", marginBottom: "32px" }}>Full documentation is coming soon.</p>
+        <div style={{ background: "#0D1117", border: "1px solid #1E293B", borderRadius: "12px", padding: "24px" }}>
+          <p style={{ color: "#94A3B8" }}>Need help with early access? Email us at{" "}
+            <a href="mailto:support@nichepulse.io" style={{ color: "#64FFDA" }}>support@nichepulse.io</a>
           </p>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

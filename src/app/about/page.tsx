@@ -1,52 +1,33 @@
 import Link from "next/link";
-import { ArrowLeft, Zap } from "lucide-react";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "About | NichePulse",
-  description: "About NichePulse — AI-powered YouTube niche intelligence.",
-};
+export const metadata: Metadata = { title: "About — NichePulse" };
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-[#080B10] text-[#CBD5E1]">
-      <div className="max-w-3xl mx-auto px-6 py-16">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-sm text-[#94A3B8] hover:text-[#64FFDA] transition-colors mb-12"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Home
-        </Link>
-
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#64FFDA] to-[#64FFDA]/60 flex items-center justify-center">
-            <Zap className="w-6 h-6 text-[#080B10]" />
-          </div>
-          <h1 className="text-4xl font-bold text-white font-[family-name:var(--font-syne)]">
-            About NichePulse
-          </h1>
-        </div>
-
-        <div className="rounded-xl border border-[#1E293B] bg-[#0D1117]/60 p-8">
-          <div className="space-y-6 text-base leading-7">
-            <p>
-              NichePulse is an AI-powered intelligence platform built specifically for faceless YouTube creators. We analyze publicly available YouTube data to help creators discover profitable niches, identify outlier channels, estimate revenue potential, and generate content ideas — all from a single dashboard.
-            </p>
-            <p>
-              We&apos;re currently in <strong className="text-white">early access</strong>. Our platform tracks 210+ channels across 15 high-growth niches with over 1,000 video data points, and we&apos;re expanding every week.
-            </p>
-            <p>
-              NichePulse was built because we believe niche selection is the single most important decision a faceless creator makes — and most people get it wrong because they rely on gut feeling instead of data. We&apos;re here to change that.
-            </p>
-            <p>
-              Questions? Reach out at{" "}
-              <a href="mailto:hello@nichepulse.io" className="text-[#64FFDA] hover:underline">
-                hello@nichepulse.io
-              </a>.
-            </p>
-          </div>
+    <main style={{ background: "#080B10", minHeight: "100vh", color: "#CBD5E1", fontSize: "16px", lineHeight: 1.8 }}>
+      <div style={{ maxWidth: "800px", margin: "0 auto", padding: "60px 24px" }}>
+        <Link href="/" style={{ color: "#64FFDA", textDecoration: "none", fontSize: "14px" }}>← Back to Home</Link>
+        <h1 style={{ fontFamily: "var(--font-syne), sans-serif", color: "#64FFDA", fontSize: "2.5rem", fontWeight: 700, margin: "32px 0 16px" }}>About NichePulse</h1>
+        <p style={{ color: "#94A3B8", fontSize: "1.1rem", marginBottom: "24px" }}>
+          NichePulse is an AI-powered YouTube niche intelligence platform for faceless creators. We help you discover profitable niches, analyze competitor channels, and score opportunities — all with real data.
+        </p>
+        <p style={{ color: "#94A3B8", fontSize: "1.1rem", marginBottom: "24px" }}>
+          Currently in early access. Built by creators, for creators.
+        </p>
+        <div style={{ background: "#0D1117", border: "1px solid #1E293B", borderRadius: "12px", padding: "24px", display: "flex", gap: "32px", flexWrap: "wrap" }}>
+          {[
+            { num: "210+", label: "Channels Indexed" },
+            { num: "15", label: "Niche Categories" },
+            { num: "97.6", label: "Top NicheScore" },
+          ].map((s) => (
+            <div key={s.label} style={{ textAlign: "center" }}>
+              <div style={{ fontFamily: "var(--font-jetbrains-mono), monospace", color: "#64FFDA", fontSize: "1.5rem", fontWeight: 700 }}>{s.num}</div>
+              <div style={{ color: "#64748B", fontSize: "0.8rem" }}>{s.label}</div>
+            </div>
+          ))}
         </div>
       </div>
-    </div>
+    </main>
   );
 }

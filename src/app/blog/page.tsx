@@ -1,40 +1,23 @@
 import Link from "next/link";
-import { ArrowLeft, PenLine } from "lucide-react";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Blog | NichePulse",
-  description: "Insights on YouTube growth, niche research, and content strategy.",
-};
+export const metadata: Metadata = { title: "Blog — NichePulse" };
 
 export default function BlogPage() {
   return (
-    <div className="min-h-screen bg-[#080B10] text-[#CBD5E1]">
-      <div className="max-w-3xl mx-auto px-6 py-16">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-sm text-[#94A3B8] hover:text-[#64FFDA] transition-colors mb-12"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Home
-        </Link>
-
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-[#F472B6]/10 flex items-center justify-center">
-            <PenLine className="w-6 h-6 text-[#F472B6]" />
+    <main style={{ background: "#080B10", minHeight: "100vh", color: "#CBD5E1", fontSize: "16px", lineHeight: 1.8 }}>
+      <div style={{ maxWidth: "800px", margin: "0 auto", padding: "60px 24px" }}>
+        <Link href="/" style={{ color: "#64FFDA", textDecoration: "none", fontSize: "14px" }}>← Back to Home</Link>
+        <h1 style={{ fontFamily: "var(--font-syne), sans-serif", color: "#64FFDA", fontSize: "2.5rem", fontWeight: 700, margin: "32px 0 16px" }}>Blog</h1>
+        <p style={{ color: "#94A3B8", fontSize: "1.1rem", marginBottom: "32px" }}>Blog launching soon. Stay tuned for niche research tips, creator strategies, and platform updates.</p>
+        <div style={{ background: "#0D1117", border: "1px solid #1E293B", borderRadius: "12px", padding: "24px" }}>
+          <p style={{ color: "#94A3B8", marginBottom: "16px" }}>Get notified when we publish:</p>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <input type="email" placeholder="your@email.com" style={{ flex: 1, height: "40px", padding: "0 12px", borderRadius: "8px", background: "#080B10", border: "1px solid #1E293B", color: "#E2E8F0", fontSize: "14px", outline: "none" }} />
+            <button style={{ background: "#64FFDA", color: "#080B10", padding: "0 20px", borderRadius: "8px", fontWeight: 700, fontSize: "14px", border: "none", cursor: "pointer" }}>Notify Me</button>
           </div>
-          <div>
-            <h1 className="text-4xl font-bold text-white font-[family-name:var(--font-syne)]">
-              Blog
-            </h1>
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-[#1E293B] bg-[#0D1117]/60 p-8 mt-8">
-          <p className="text-base leading-7">
-            Blog launching soon. We&apos;ll be sharing insights on YouTube niche research, content strategy, growth tactics for faceless channels, and behind-the-scenes updates on NichePulse.
-          </p>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

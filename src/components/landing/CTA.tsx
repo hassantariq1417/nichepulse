@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 
+/* ── FIX 9 — Updated CTA copy ───────────────────────────────── */
+
 export function CTA() {
   return (
     <section className="py-24 relative">
@@ -26,8 +28,7 @@ export function CTA() {
               <span className="text-[#64FFDA]">winning niche</span>?
             </h2>
             <p className="text-[#94A3B8] max-w-xl mx-auto text-lg mb-8">
-              Join the early access list and start making smarter content
-              decisions. Start with 5 free searches per day.
+              Join the early access list. Start with 3 free searches per day.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

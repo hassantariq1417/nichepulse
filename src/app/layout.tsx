@@ -16,9 +16,9 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://nichepulse-teal.vercel.app"),
-  title: "NichePulse | AI YouTube Intelligence",
+  title: "NichePulse | AI YouTube Niche Intelligence",
   description:
-    "AI-powered YouTube niche intelligence platform. Find profitable faceless YouTube niches, analyze competitor channels, and generate content ideas.",
+    "AI-powered YouTube niche intelligence for faceless creators. Discover untapped niches, score competition, and generate content ideas — all in one dashboard.",
   keywords: [
     "YouTube niche finder",
     "faceless YouTube",
@@ -33,9 +33,9 @@ export const metadata: Metadata = {
     canonical: "https://nichepulse-teal.vercel.app",
   },
   openGraph: {
-    title: "NichePulse — Find Profitable YouTube Niches Before Everyone Else",
+    title: "NichePulse — AI YouTube Niche Intelligence for Faceless Creators",
     description:
-      "AI-powered niche intelligence for faceless YouTube creators.",
+      "Score niches. Detect outliers. Generate content ideas. One dashboard for faceless YouTube research.",
     url: "https://nichepulse-teal.vercel.app",
     siteName: "NichePulse",
     images: [
@@ -51,8 +51,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "NichePulse",
-    description: "AI-powered YouTube niche intelligence.",
+    title: "NichePulse — AI YouTube Niche Intelligence",
+    description: "Score niches. Detect outliers. One dashboard for faceless YouTube research.",
     images: ["/og-image.png"],
   },
   robots: {

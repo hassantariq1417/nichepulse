@@ -63,7 +63,7 @@ export function Features() {
             <span className="text-[#64FFDA]">dominate</span> YouTube
           </h2>
           <p className="text-[#94A3B8] max-w-2xl mx-auto text-lg">
-            From niche discovery to content generation — one platform built for faceless channel research. Built for creators who move fast.
+            One platform built for faceless channel research. Built for creators who move fast.
           </p>
         </div>
 

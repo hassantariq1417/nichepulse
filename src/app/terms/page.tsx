@@ -1,130 +1,97 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Terms of Service | NichePulse",
-  description: "Terms and conditions for using the NichePulse platform.",
+export const metadata: Metadata = {
+  title: "Terms of Service — NichePulse",
+  description: "NichePulse terms of service.",
 };
 
-const sections = [
-  {
-    title: "1. Acceptance of Terms",
-    content: [
-      "By using NichePulse you agree to these terms.",
-      "If you don't agree, don't use the service.",
-    ],
-  },
-  {
-    title: "2. Description of Service",
-    content: [
-      "NichePulse provides YouTube niche research and analytics tools for content creators. We analyze publicly available YouTube data to provide niche scoring and recommendations.",
-    ],
-  },
-  {
-    title: "3. User Accounts",
-    items: [
-      "You must provide accurate information when signing up",
-      "You are responsible for your account security",
-      "One account per person",
-      "You must be 16+ to use NichePulse",
-    ],
-  },
-  {
-    title: "4. Acceptable Use",
-    content: ["You may NOT:"],
-    items: [
-      "Resell or redistribute NichePulse data",
-      "Use the service to spam or harass other creators",
-      "Attempt to scrape or extract our database",
-      "Use automated tools to abuse the service",
-      "Misrepresent our data as your own proprietary research",
-    ],
-  },
-  {
-    title: "5. Subscription and Billing",
-    items: [
-      "Pro plan billed monthly or annually",
-      "Cancel anytime — access continues until end of period",
-      "14-day refund policy: email support@nichepulse.io",
-      "Prices may change with 30 days notice to existing users",
-      "Early Bird pricing is locked for life for qualifying users",
-    ],
-  },
-  {
-    title: "6. Data and Accuracy",
-    items: [
-      "YouTube data is sourced from public sources",
-      "Revenue estimates are approximations, not guarantees",
-      "NicheScores are algorithmic estimates, not financial advice",
-      "We do not guarantee any channel growth or income results",
-    ],
-  },
-  {
-    title: "7. Intellectual Property",
-    items: [
-      "NichePulse owns the platform, design, and algorithms",
-      "You own any content you create using our tools",
-      "Our data may not be redistributed without permission",
-    ],
-  },
-  {
-    title: "8. Limitation of Liability",
-    content: [
-      "NichePulse is not liable for any business decisions made based on our data. Use insights as one of many inputs, not as sole decision-making criteria.",
-    ],
-  },
-  {
-    title: "9. Termination",
-    content: [
-      "We may suspend accounts that violate these terms.",
-      "You may delete your account at any time in Settings.",
-    ],
-  },
-  {
-    title: "10. Contact",
-    content: ["support@nichepulse.io"],
-  },
-];
-
 export default function TermsPage() {
+  const sectionStyle = { marginBottom: "40px" as const };
+  const h2Style = {
+    fontFamily: "var(--font-syne), sans-serif",
+    color: "#64FFDA",
+    fontSize: "1.25rem" as const,
+    fontWeight: 700 as const,
+    marginBottom: "12px",
+  };
+
   return (
-    <main className="min-h-screen bg-[#080B10] text-[#CBD5E1]">
-      <div className="mx-auto max-w-[800px] px-6 py-12 sm:py-16">
-        <Link
-          href="/"
-          className="mb-12 inline-flex text-sm font-medium text-[#94A3B8] transition-colors hover:text-[#64FFDA]"
-        >
-          ← Back to Home
-        </Link>
+    <main style={{ background: "#080B10", minHeight: "100vh", color: "#CBD5E1", fontSize: "16px", lineHeight: 1.8 }}>
+      <div style={{ maxWidth: "800px", margin: "0 auto", padding: "60px 24px" }}>
+        <Link href="/" style={{ color: "#64FFDA", textDecoration: "none", fontSize: "14px" }}>← Back to Home</Link>
 
-        <header className="mb-12">
-          <h1 className="font-[family-name:var(--font-syne)] text-4xl font-bold tracking-tight text-[#64FFDA] sm:text-5xl">
-            Terms of Service
-          </h1>
-        </header>
+        <h1 style={{ fontFamily: "var(--font-syne), sans-serif", color: "#64FFDA", fontSize: "2.5rem", fontWeight: 700, margin: "32px 0 8px" }}>Terms of Service</h1>
+        <p style={{ color: "#64748B", fontSize: "14px", marginBottom: "48px" }}>Last updated: May 2026</p>
 
-        <div className="space-y-10 text-base leading-[1.8]">
-          {sections.map((section) => (
-            <section key={section.title}>
-              <h2 className="mb-4 font-[family-name:var(--font-syne)] text-2xl font-semibold text-[#64FFDA]">
-                {section.title}
-              </h2>
+        <section style={sectionStyle}>
+          <h2 style={h2Style}>1. Acceptance of Terms</h2>
+          <p>By accessing or using NichePulse, you agree to be bound by these Terms of Service. If you do not agree, do not use the service.</p>
+        </section>
 
-              {section.content?.map((paragraph) => (
-                <p key={paragraph} className="mb-3">
-                  {paragraph}
-                </p>
-              ))}
+        <section style={sectionStyle}>
+          <h2 style={h2Style}>2. Description of Service</h2>
+          <p>NichePulse is a YouTube niche research tool that analyzes publicly available data to help creators find profitable niches. We only access public YouTube data — we never access private account information.</p>
+        </section>
 
-              {section.items && (
-                <ul className="list-disc space-y-2 pl-6">
-                  {section.items.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-              )}
-            </section>
-          ))}
-        </div>
+        <section style={sectionStyle}>
+          <h2 style={h2Style}>3. User Accounts</h2>
+          <ul style={{ paddingLeft: "20px" }}>
+            <li>You must provide accurate information during registration</li>
+            <li>You must be at least 16 years old to use the service</li>
+            <li>One account per person</li>
+            <li>You are responsible for maintaining the security of your account</li>
+          </ul>
+        </section>
+
+        <section style={sectionStyle}>
+          <h2 style={h2Style}>4. Acceptable Use</h2>
+          <ul style={{ paddingLeft: "20px" }}>
+            <li>No reselling NichePulse data</li>
+            <li>No scraping our database</li>
+            <li>No spamming or abusing the platform</li>
+            <li>No using the service for illegal purposes</li>
+          </ul>
+        </section>
+
+        <section style={sectionStyle}>
+          <h2 style={h2Style}>5. Billing</h2>
+          <ul style={{ paddingLeft: "20px" }}>
+            <li>Cancel anytime — no long-term commitments</li>
+            <li>14-day refund policy for paid plans</li>
+            <li>Email <a href="mailto:support@nichepulse.io" style={{ color: "#64FFDA" }}>support@nichepulse.io</a> for billing issues</li>
+            <li>Early Bird pricing is locked for the lifetime of your subscription</li>
+          </ul>
+        </section>
+
+        <section style={sectionStyle}>
+          <h2 style={h2Style}>6. Data Accuracy</h2>
+          <p>All niche scores, revenue estimates, and analytics are estimates only. NichePulse is not financial advice. We make no income guarantees.</p>
+        </section>
+
+        <section style={sectionStyle}>
+          <h2 style={h2Style}>7. Intellectual Property</h2>
+          <p>We own the NichePulse platform, its design, and algorithms. You own your content and any data you generate or export.</p>
+        </section>
+
+        <section style={sectionStyle}>
+          <h2 style={h2Style}>8. Limitation of Liability</h2>
+          <p>NichePulse is provided &quot;as is&quot; without warranty. We are not liable for any damages arising from your use of the service, including but not limited to lost profits or data.</p>
+        </section>
+
+        <section style={sectionStyle}>
+          <h2 style={h2Style}>9. Termination</h2>
+          <ul style={{ paddingLeft: "20px" }}>
+            <li>We may suspend or terminate accounts that violate these terms</li>
+            <li>You can delete your account at any time</li>
+            <li>Upon termination, your data will be deleted within 30 days</li>
+          </ul>
+        </section>
+
+        <section style={sectionStyle}>
+          <h2 style={h2Style}>10. Contact</h2>
+          <p>For questions about these terms, email <a href="mailto:support@nichepulse.io" style={{ color: "#64FFDA" }}>support@nichepulse.io</a></p>
+        </section>
       </div>
     </main>
   );

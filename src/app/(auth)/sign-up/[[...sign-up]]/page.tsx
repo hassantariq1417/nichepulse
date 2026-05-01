@@ -5,11 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Zap, Eye, EyeOff, ArrowRight, Loader2, CheckCircle } from "lucide-react";
 
+/* ── FIX 11 — Updated sign-up page copy ──────────────────────── */
+
 const features = [
-  "Discover 15+ profitable YouTube niches",
-  "Analyze 210+ channels with AI scoring",
-  "Generate titles, hooks, and scripts",
-  "Real-time trend detection",
+  "210+ YouTube channels indexed and scored",
+  "15 niche categories with real competition data",
+  "AI-powered recommendations via Claude",
+  "Updated daily with new channel discoveries",
 ];
 
 export default function SignUpPage() {
@@ -50,20 +52,52 @@ export default function SignUpPage() {
             </div>
             <span className="text-xl font-bold text-white tracking-tight">NichePulse</span>
           </div>
-          <h2 className="text-3xl font-bold text-white leading-tight mb-4">
+          <h2 className="text-3xl font-bold text-white leading-tight mb-6">
             Start Finding Profitable
             <br />
             Niches Today
           </h2>
-          <p className="text-[#94A3B8] text-sm leading-relaxed max-w-sm mb-8">
-            Join thousands of YouTube creators using AI intelligence to
-            discover untapped opportunities and grow faster.
-          </p>
-          <div className="space-y-3">
+
+          {/* Bullet points */}
+          <div className="space-y-3 mb-6">
             {features.map((feature) => (
               <div key={feature} className="flex items-center gap-3">
                 <CheckCircle className="w-4 h-4 text-[#64FFDA] shrink-0" />
                 <span className="text-sm text-[#94A3B8]">{feature}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Honest badge */}
+          <div style={{
+            background: "#0D1117",
+            border: "1px solid #1E293B",
+            borderRadius: "8px",
+            padding: "12px 16px",
+            marginTop: "24px",
+            fontSize: "13px",
+            color: "#64748B",
+          }}>
+            🌱 Early access product — real data, honest numbers
+          </div>
+
+          {/* Three stats */}
+          <div style={{
+            display: "flex",
+            gap: "32px",
+            marginTop: "32px",
+            paddingTop: "24px",
+            borderTop: "1px solid #1E293B",
+          }}>
+            {[
+              { num: "210+", top: "Channels", bottom: "Tracked" },
+              { num: "15", top: "Categories", bottom: "Indexed" },
+              { num: "97.6", top: "Top Score", bottom: "Found" },
+            ].map((s) => (
+              <div key={s.top} style={{ textAlign: "center" }}>
+                <div style={{ fontFamily: "var(--font-jetbrains-mono), monospace", color: "#64FFDA", fontSize: "1.5rem", fontWeight: 700 }}>{s.num}</div>
+                <div style={{ color: "#94A3B8", fontSize: "11px" }}>{s.top}</div>
+                <div style={{ color: "#64748B", fontSize: "11px" }}>{s.bottom}</div>
               </div>
             ))}
           </div>
@@ -179,7 +213,10 @@ export default function SignUpPage() {
           </form>
 
           <p className="text-[10px] text-[#94A3B8] text-center mt-4">
-            By creating an account, you agree to our Terms of Service and Privacy Policy.
+            By creating an account, you agree to our{" "}
+            <Link href="/terms" className="text-[#64FFDA] hover:underline">Terms of Service</Link>
+            {" "}and{" "}
+            <Link href="/privacy" className="text-[#64FFDA] hover:underline">Privacy Policy</Link>.
           </p>
 
           <p className="text-sm text-[#94A3B8] text-center mt-4">

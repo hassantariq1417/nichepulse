@@ -1,66 +1,30 @@
 import Link from "next/link";
-import { ArrowLeft, Tag } from "lucide-react";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Changelog | NichePulse",
-  description: "What's new in NichePulse — release notes and updates.",
-};
+export const metadata: Metadata = { title: "Changelog — NichePulse" };
 
 export default function ChangelogPage() {
   return (
-    <div className="min-h-screen bg-[#080B10] text-[#CBD5E1]">
-      <div className="max-w-3xl mx-auto px-6 py-16">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-sm text-[#94A3B8] hover:text-[#64FFDA] transition-colors mb-12"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to Home
-        </Link>
+    <main style={{ background: "#080B10", minHeight: "100vh", color: "#CBD5E1", fontSize: "16px", lineHeight: 1.8 }}>
+      <div style={{ maxWidth: "800px", margin: "0 auto", padding: "60px 24px" }}>
+        <Link href="/" style={{ color: "#64FFDA", textDecoration: "none", fontSize: "14px" }}>← Back to Home</Link>
+        <h1 style={{ fontFamily: "var(--font-syne), sans-serif", color: "#64FFDA", fontSize: "2.5rem", fontWeight: 700, margin: "32px 0 32px" }}>Changelog</h1>
 
-        <h1 className="text-4xl font-bold text-white mb-2 font-[family-name:var(--font-syne)]">
-          Changelog
-        </h1>
-        <p className="text-sm text-[#94A3B8] mb-12">
-          All notable updates to NichePulse.
-        </p>
-
-        <div className="space-y-8">
-          <div className="relative pl-8 border-l-2 border-[#1E293B]">
-            <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-[#4ADE80] border-2 border-[#080B10]" />
-            <div className="flex items-center gap-3 mb-2">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#4ADE80]/10 text-[#4ADE80] text-xs font-semibold">
-                <Tag className="w-3 h-3" />
-                v0.1
-              </span>
-              <span className="text-xs text-[#94A3B8]">May 1, 2026</span>
-            </div>
-            <h3 className="text-lg font-semibold text-white mb-2">Initial Launch</h3>
-            <ul className="space-y-1.5 text-sm leading-relaxed">
-              <li className="flex items-start gap-2">
-                <span className="text-[#4ADE80] mt-0.5">•</span>
-                Niche Finder live with 15 indexed niches and real-time scoring
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-[#4ADE80] mt-0.5">•</span>
-                AI-powered niche recommendations active via Gemini
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-[#4ADE80] mt-0.5">•</span>
-                Channel Explorer with 210+ tracked channels
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-[#4ADE80] mt-0.5">•</span>
-                Content Studio with title, description, and hook generators
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-[#4ADE80] mt-0.5">•</span>
-                YouTube Data ingestion pipeline for live data refresh
-              </li>
-            </ul>
+        <div style={{ background: "#0D1117", border: "1px solid #1E293B", borderRadius: "12px", padding: "24px", marginBottom: "24px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
+            <span style={{ background: "#064E3B", color: "#34D399", borderRadius: "6px", padding: "4px 10px", fontSize: "12px", fontWeight: 700 }}>v0.1.0</span>
+            <span style={{ color: "#64748B", fontSize: "14px" }}>May 2026</span>
           </div>
+          <h3 style={{ color: "#E2E8F0", fontSize: "1.1rem", fontWeight: 600, marginBottom: "8px" }}>Initial Launch</h3>
+          <ul style={{ paddingLeft: "20px", color: "#94A3B8" }}>
+            <li>Niche Finder live with 15 categories</li>
+            <li>Claude AI recommendations active</li>
+            <li>210+ channels indexed and scored</li>
+            <li>Outlier detection and revenue analytics</li>
+            <li>Early Bird pricing launched</li>
+          </ul>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
