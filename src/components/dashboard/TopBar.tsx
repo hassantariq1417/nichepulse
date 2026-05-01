@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search, Bell, ChevronDown, Sparkles, Activity } from "lucide-react";
+import { Search, Bell, ChevronDown, Activity } from "lucide-react";
 
 interface QuotaWidget {
   mode: "api" | "degraded" | "scraper-only";
@@ -82,11 +82,7 @@ export function TopBar() {
         {/* Quota status widget */}
         <QuotaIndicator />
 
-        {/* AI Credits */}
-        <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#64FFDA]/10 border border-[#64FFDA]/20">
-          <Sparkles className="w-3.5 h-3.5 text-[#64FFDA]" />
-          <span className="text-xs font-medium text-[#64FFDA]">5 AI credits left</span>
-        </div>
+
 
         {/* Notifications */}
         <button className="relative w-9 h-9 rounded-lg bg-[#1E293B]/50 flex items-center justify-center text-[#94A3B8] hover:text-white hover:bg-[#1E293B] transition-colors duration-200 cursor-pointer">

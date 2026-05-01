@@ -198,7 +198,7 @@ export default function ContentStudioPage() {
               </div>
             )}
             <p className="text-[10px] text-[#94A3B8] text-center">
-              Powered by Gemini AI
+              Powered by Claude AI
             </p>
           </div>
         </div>

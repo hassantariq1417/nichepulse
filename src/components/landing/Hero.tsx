@@ -1,65 +1,77 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles, X } from "lucide-react";
 
-/* ── FIX 1 — Count-up hook ───────────────────────────────────── */
+/* ── FIX A — Robust stat counter with fallback ───────────────── */
 
-function useCountUp(target: number, duration = 2000) {
-  const [count, setCount] = React.useState(0);
-  const ref = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        observer.disconnect();
-        const start = performance.now();
-        const tick = (now: number) => {
-          const progress = Math.min((now - start) / duration, 1);
-          const eased = 1 - Math.pow(2, -10 * progress);
-          setCount(Math.floor(eased * target));
-          if (progress < 1) requestAnimationFrame(tick);
-        };
-        requestAnimationFrame(tick);
-      },
-      { threshold: 0.1 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [target, duration]);
-
-  return { count, ref };
-}
-
-function StatItem({
+function StatCounter({
   target,
   suffix,
   label,
-  className = "text-white",
 }: {
   target: number;
   suffix: string;
   label: string;
-  className?: string;
 }) {
-  const { count, ref } = useCountUp(target);
+  const [count, setCount] = useState(0);
+  const [started, setStarted] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !started) {
+          setStarted(true);
+          const duration = 2000;
+          const startTime = Date.now();
+          const timer = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(2, -10 * progress);
+            setCount(Math.floor(eased * target));
+            if (progress >= 1) {
+              setCount(target);
+              clearInterval(timer);
+            }
+          }, 16);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [target, started]);
+
+  // Safety fallback — if IO never fires, show the number after 3s
+  useEffect(() => {
+    const fallback = setTimeout(() => {
+      if (!started) {
+        setCount(target);
+        setStarted(true);
+      }
+    }, 3000);
+    return () => clearTimeout(fallback);
+  }, [started, target]);
+
   return (
     <div ref={ref} className="text-center">
-      <span
-        className={`block text-2xl sm:text-3xl font-bold font-mono tabular-nums ${className}`}
+      <div
+        className="text-2xl sm:text-3xl font-bold font-mono tabular-nums"
+        style={{ fontFamily: "var(--font-jetbrains-mono, 'JetBrains Mono'), monospace", color: "#64FFDA" }}
       >
         {count}
         {suffix}
-      </span>
-      <span className="block text-xs sm:text-sm text-[#94A3B8] mt-1">
+      </div>
+      <div className="text-xs sm:text-sm mt-1" style={{ color: "#64748B" }}>
         {label}
-      </span>
+      </div>
     </div>
   );
 }
@@ -274,14 +286,9 @@ export function Hero() {
             className="grid grid-cols-3 gap-8 max-w-lg mx-auto animate-slide-up"
             style={{ animationDelay: "0.3s" }}
           >
-            <StatItem target={98} suffix="M+" label="Channels Analyzed" />
-            <StatItem target={41} suffix="" label="Countries" />
-            <StatItem
-              target={100}
-              suffix="K+"
-              label="Active Creators"
-              className="text-[#64FFDA]"
-            />
+            <StatCounter target={98} suffix="M+" label="Channels Analyzed" />
+            <StatCounter target={41} suffix="" label="Countries" />
+            <StatCounter target={100} suffix="K+" label="Active Creators" />
           </div>
         </div>
 

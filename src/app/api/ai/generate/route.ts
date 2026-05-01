@@ -240,15 +240,14 @@ const generators: Record<string, (topic: string) => string[]> = {
   outline: generateOutline,
 };
 
-// Optional: Try Gemini if API key is available and working
-async function tryGeminiGeneration(type: string, topic: string): Promise<string[] | null> {
-  const apiKey = process.env.GEMINI_API_KEY;
+// Optional: Try Claude if API key is available and working
+async function tryClaudeGeneration(type: string, topic: string): Promise<string[] | null> {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return null;
 
   try {
-    const { GoogleGenerativeAI } = await import("@google/generative-ai");
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const Anthropic = (await import("@anthropic-ai/sdk")).default;
+    const client = new Anthropic({ apiKey });
 
     const prompts: Record<string, string> = {
       title: `Generate 5 click-worthy YouTube video titles about: ${topic}. Return ONLY the titles, one per line, numbered 1-5.`,
@@ -259,12 +258,13 @@ async function tryGeminiGeneration(type: string, topic: string): Promise<string[
       outline: `Generate a complete YouTube video script outline about: ${topic}. Include timestamps and talking points.`,
     };
 
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts: [{ text: prompts[type] }] }],
-      generationConfig: { temperature: 0.8, maxOutputTokens: 2048 },
+    const message = await client.messages.create({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 2048,
+      messages: [{ role: "user", content: prompts[type] }],
     });
 
-    const text = result.response.text();
+    const text = message.content[0].type === "text" ? message.content[0].text : "";
     if (!text || text.length < 20) return null;
 
     if (type === "title") {
@@ -278,7 +278,7 @@ async function tryGeminiGeneration(type: string, topic: string): Promise<string[
       return [text.trim()];
     }
   } catch (e) {
-    console.log("Gemini unavailable, using built-in engine:", (e as Error).message);
+    console.log("Claude unavailable, using built-in engine:", (e as Error).message);
     return null;
   }
 }
@@ -297,10 +297,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Try AI-powered generation first, fall back to smart templates
-    const aiResults = await tryGeminiGeneration(type, topic);
+    const aiResults = await tryClaudeGeneration(type, topic);
     
     if (aiResults && aiResults.length > 0) {
-      return NextResponse.json({ results: aiResults, source: "gemini" });
+      return NextResponse.json({ results: aiResults, source: "claude" });
     }
 
     // Built-in smart template engine (always works, no API needed)

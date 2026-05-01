@@ -114,7 +114,7 @@ function SubscriptionTab() {
                 Current
               </span>
             </div>
-            <p className="text-xs text-[#94A3B8] mt-1">5 AI credits/day • 15 niches • Basic analytics</p>
+            <p className="text-xs text-[#94A3B8] mt-1">15 niches • Basic analytics • Content Studio</p>
           </div>
           <div className="text-right">
             <span className="text-2xl font-bold text-white">$0</span>
@@ -127,8 +127,8 @@ function SubscriptionTab() {
         <h3 className="text-sm font-medium text-[#94A3B8]">Available Plans</h3>
 
         {[
-          { name: "Pro", price: "$19", features: "Unlimited AI credits • 50 niches • Advanced analytics • Priority support" },
-          { name: "Enterprise", price: "$49", features: "Everything in Pro • Team collaboration • Custom integrations • Dedicated support" },
+          { name: "Early Bird Pro", price: "$9", features: "Unlimited AI • All niches • Advanced analytics • Priority support" },
+          { name: "Team", price: "$79", features: "Everything in Pro • Team collaboration • Custom integrations • Dedicated support" },
         ].map((plan) => (
           <div key={plan.name} className="p-4 rounded-xl border border-[#1E293B] bg-[#0D1117]/60 hover:border-[#4ADE80]/30 transition-colors group">
             <div className="flex items-center justify-between">
