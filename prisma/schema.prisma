@@ -78,8 +78,11 @@ model Channel {
   nicheCategoryId String?
   nicheCategory   NicheCategory? @relation(fields: [nicheCategoryId], references: [id])
 
+  videosLast30Days   Int           @default(0)
+
   videos      VideoInsight[]
   savedBy     UserSavedNiche[]
+  snapshots   ChannelSnapshot[]
 
   @@index([category])
   @@index([nicheScore])
@@ -140,6 +143,18 @@ model UserSavedNiche {
 
   @@unique([userId, channelId])
   @@index([userId])
+}
+
+model ChannelSnapshot {
+  id              String   @id @default(cuid())
+  channelId       String
+  subscriberCount Int
+  viewCount       Int
+  videoCount      Int
+  snapshotDate    DateTime @default(now())
+  channel         Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@index([channelId, snapshotDate])
 }
 
 model SearchCache {

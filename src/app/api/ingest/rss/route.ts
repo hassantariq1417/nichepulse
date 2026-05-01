@@ -2,76 +2,163 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
-async function fetchRSS(channelId: string) {
-  const res = await fetch(
-    `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`,
-    {
-      headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36" },
-      signal: AbortSignal.timeout(8000),
+/* ── FIX 4: Parse RSS feeds with real view counts ──────────── */
+
+function parseRSSWithViews(xml: string) {
+  const entries = Array.from(xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g));
+
+  const videos: Array<{
+    videoId: string;
+    title: string;
+    publishedAt: Date;
+    viewCount: number;
+  }> = [];
+
+  let totalRecentViews = 0;
+  const thirtyDaysAgo = Date.now() - 30 * 86400000;
+
+  for (const entry of entries) {
+    const entryXml = entry[1];
+
+    const videoId =
+      entryXml.match(/<yt:videoId>([^<]+)<\/yt:videoId>/)?.[1] || "";
+    const title = entryXml.match(/<title>([^<]+)<\/title>/)?.[1] || "";
+    const published =
+      entryXml.match(/<published>([^<]+)<\/published>/)?.[1] || "";
+    const views = parseInt(
+      entryXml.match(/<media:statistics\s+views="(\d+)"/)?.[1] ||
+        entryXml.match(/<yt:statistics\s+views="(\d+)"/)?.[1] ||
+        "0"
+    );
+
+    const publishedAt = new Date(published);
+
+    if (publishedAt.getTime() > thirtyDaysAgo) {
+      totalRecentViews += views;
     }
-  );
-  if (!res.ok) return null;
-  const xml = await res.text();
 
-  // Parse upload frequency from publish dates
-  const dateMatches = xml.match(/<published>([^<]+)<\/published>/g) || [];
-  const dates = dateMatches
-    .slice(1, 6) // skip channel-level date, take video dates
-    .map((d) => new Date(d.replace(/<\/?published>/g, "")).getTime());
-
-  let uploadFrequency = 7;
-  if (dates.length >= 2) {
-    const gaps: number[] = [];
-    for (let i = 0; i < dates.length - 1; i++) {
-      gaps.push((dates[i] - dates[i + 1]) / 86400000);
-    }
-    uploadFrequency = gaps.reduce((a, b) => a + b, 0) / gaps.length;
+    videos.push({ videoId, title, publishedAt, viewCount: views });
   }
 
-  const lastUpload = dates[0] ? new Date(dates[0]) : null;
+  const uploadsLast30Days = videos.filter(
+    (v) => v.publishedAt.getTime() > thirtyDaysAgo
+  ).length;
 
-  // Count recent uploads
-  const now = Date.now();
-  const recent30 = dates.filter((d) => now - d < 30 * 86400000).length;
-
-  return {
-    uploadFrequency: Math.round(uploadFrequency * 10) / 10,
-    lastVideoAt: lastUpload,
-    videosLast30Days: recent30,
-  };
+  return { videos, totalRecentViews, uploadsLast30Days };
 }
 
-export async function POST() {
-  const channels = await prisma.channel.findMany({
-    select: { id: true, youtubeId: true },
-    take: 100,
-    orderBy: { lastScrapedAt: "asc" },
-  });
-
-  let updated = 0;
-  const BATCH = 20;
-
-  for (let i = 0; i < channels.length; i += BATCH) {
-    const batch = channels.slice(i, i + BATCH);
-    await Promise.allSettled(
-      batch.map(async (ch) => {
-        const rss = await fetchRSS(ch.youtubeId);
-        if (!rss) return;
-        await prisma.channel.update({
-          where: { id: ch.id },
-          data: { uploadFrequency: rss.uploadFrequency },
-        });
-        updated++;
-      })
-    );
-    // Rate limit between batches
-    await new Promise((r) => setTimeout(r, 500));
+function calculateUploadFreq(
+  videos: Array<{ publishedAt: Date }>
+): number {
+  if (videos.length < 2) return 30;
+  const sorted = [...videos].sort(
+    (a, b) => b.publishedAt.getTime() - a.publishedAt.getTime()
+  );
+  const gaps: number[] = [];
+  for (let i = 0; i < Math.min(sorted.length - 1, 10); i++) {
+    const gap =
+      (sorted[i].publishedAt.getTime() - sorted[i + 1].publishedAt.getTime()) /
+      86400000;
+    if (gap > 0) gaps.push(gap);
   }
+  if (gaps.length === 0) return 30;
+  return Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length);
+}
 
-  return NextResponse.json({
-    success: true,
-    updated,
-    total: channels.length,
-  });
+/* ── POST /api/ingest/rss ──────────────────────────────────── */
+
+export async function POST() {
+  try {
+    const channels = await prisma.channel.findMany({
+      select: { id: true, youtubeId: true, title: true },
+      orderBy: { lastScrapedAt: "asc" },
+      take: 50, // process up to 50 per request
+    });
+
+    let updated = 0;
+    const log: string[] = [];
+
+    for (const channel of channels) {
+      try {
+        const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channel.youtubeId}`;
+        const res = await fetch(rssUrl, {
+          signal: AbortSignal.timeout(8000),
+          headers: {
+            "User-Agent":
+              "Mozilla/5.0 (compatible; NichePulse/1.0; +https://nichepulse.com)",
+          },
+        });
+
+        if (!res.ok) {
+          log.push(`❌ ${channel.title}: RSS ${res.status}`);
+          continue;
+        }
+
+        const xml = await res.text();
+        const { videos, totalRecentViews, uploadsLast30Days } =
+          parseRSSWithViews(xml);
+
+        const uploadFreq = calculateUploadFreq(videos);
+
+        // Update channel with real RSS data
+        await prisma.channel.update({
+          where: { id: channel.id },
+          data: {
+            viewsLast48h: Math.round(totalRecentViews / 15), // rough daily average
+            uploadFrequency: uploadFreq,
+            videosLast30Days: uploadsLast30Days,
+            lastScrapedAt: new Date(),
+          },
+        });
+
+        // Also update video insights with real view counts
+        for (const video of videos.slice(0, 15)) {
+          if (!video.videoId) continue;
+          await prisma.videoInsight
+            .upsert({
+              where: { youtubeVideoId: video.videoId },
+              create: {
+                channelId: channel.id,
+                youtubeVideoId: video.videoId,
+                title: video.title,
+                viewCount: video.viewCount,
+                publishedAt: video.publishedAt,
+                isViral: false,
+                thumbnail: `https://i.ytimg.com/vi/${video.videoId}/mqdefault.jpg`,
+              },
+              update: {
+                viewCount: video.viewCount,
+                title: video.title,
+              },
+            })
+            .catch(() => null);
+        }
+
+        updated++;
+        log.push(
+          `✅ ${channel.title}: ${uploadsLast30Days} uploads/30d, ${totalRecentViews.toLocaleString()} recent views, freq=${uploadFreq}d`
+        );
+
+        // 300ms between channels to be respectful
+        await new Promise((r) => setTimeout(r, 300));
+      } catch {
+        log.push(`❌ ${channel.title}: timeout/error`);
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      total: channels.length,
+      updated,
+      log,
+    });
+  } catch (error) {
+    console.error("RSS error:", error);
+    return NextResponse.json(
+      { success: false, error: String(error) },
+      { status: 500 }
+    );
+  }
 }

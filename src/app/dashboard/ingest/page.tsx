@@ -9,6 +9,7 @@ import {
   Loader2,
   RefreshCw,
   Rss,
+  Trash2,
 } from "lucide-react";
 
 const NICHES = [
@@ -35,18 +36,14 @@ export default function IngestPage() {
   const [stats, setStats] = useState({ channels: 0, niches: 0, videos: 0 });
   const [currentNiche, setCurrentNiche] = useState("");
 
-  // Load current DB stats on mount
   useEffect(() => {
-    fetch("/api/ingest/stats")
-      .then((r) => r.json())
-      .then((d) => setStats(d))
-      .catch(() => null);
+    refreshStats();
   }, []);
 
   const addLog = (msg: string) =>
     setLog((prev) => [
       `${new Date().toLocaleTimeString()} ${msg}`,
-      ...prev.slice(0, 99),
+      ...prev.slice(0, 199),
     ]);
 
   const refreshStats = () => {
@@ -58,10 +55,7 @@ export default function IngestPage() {
 
   const runIngest = async (niche?: string) => {
     setRunning(true);
-    setLog([]);
-
     const niches = niche ? [niche] : NICHES;
-
     addLog(`🚀 Starting ingest for ${niches.length} niche(s)...`);
 
     for (const n of niches) {
@@ -77,8 +71,10 @@ export default function IngestPage() {
         const data = await res.json();
 
         if (data.success) {
-          addLog(`✅ ${n}: ${data.saved} channels saved, ${data.errors} errors`);
-          data.channels?.forEach((ch: string) => addLog(`  ${ch}`));
+          addLog(
+            `✅ ${n}: ${data.saved} channels saved, ${data.errors} errors`
+          );
+          data.channels?.forEach((ch: string) => addLog(`   ${ch}`));
           refreshStats();
         } else {
           addLog(`❌ ${n}: ${data.error}`);
@@ -87,7 +83,6 @@ export default function IngestPage() {
         addLog(`❌ ${n}: Network error`);
       }
 
-      // 500ms between niches
       await new Promise((r) => setTimeout(r, 500));
     }
 
@@ -99,19 +94,87 @@ export default function IngestPage() {
 
   const runRSS = async () => {
     setRunning(true);
-    addLog("📡 Running RSS enrichment...");
+    addLog("📡 Running RSS enrichment (real view counts + upload frequency)...");
 
     try {
       const res = await fetch("/api/ingest/rss", { method: "POST" });
       const data = await res.json();
-      addLog(
-        `✅ RSS: Updated ${data.updated}/${data.total} channels with upload frequency`
-      );
+      if (data.success) {
+        addLog(
+          `✅ RSS: Updated ${data.updated}/${data.total} channels`
+        );
+        data.log?.forEach((entry: string) => addLog(`   ${entry}`));
+      } else {
+        addLog(`❌ RSS: ${data.error}`);
+      }
     } catch {
       addLog("❌ RSS enrichment failed");
     }
 
     setRunning(false);
+    refreshStats();
+  };
+
+  // FIX 9: Clear & Re-seed
+  const clearAndReseed = async () => {
+    if (
+      !confirm(
+        "This will DELETE all existing channel data and re-scrape from real YouTube channels. Continue?"
+      )
+    )
+      return;
+
+    setRunning(true);
+    setLog([]);
+    addLog("🗑️  Clearing existing channel data...");
+
+    try {
+      const clearRes = await fetch("/api/ingest/clear", { method: "POST" });
+      const clearData = await clearRes.json();
+      addLog(
+        `✅ Cleared ${clearData.deletedChannels} channels, ${clearData.deletedVideos} videos, ${clearData.deletedSnapshots} snapshots`
+      );
+    } catch {
+      addLog("❌ Failed to clear database");
+      setRunning(false);
+      return;
+    }
+
+    refreshStats();
+
+    addLog("🚀 Starting fresh ingest with REAL channel IDs...");
+    // Run each niche individually to avoid timeouts
+    for (const n of NICHES) {
+      setCurrentNiche(n);
+      addLog(`📁 Processing: ${n}`);
+
+      try {
+        const res = await fetch("/api/ingest", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ niche: n }),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          addLog(
+            `✅ ${n}: ${data.saved} channels saved, ${data.errors} errors`
+          );
+          data.channels?.forEach((ch: string) => addLog(`   ${ch}`));
+          refreshStats();
+        } else {
+          addLog(`❌ ${n}: ${data.error}`);
+        }
+      } catch {
+        addLog(`❌ ${n}: Network error / timeout`);
+      }
+
+      await new Promise((r) => setTimeout(r, 800));
+    }
+
+    setCurrentNiche("");
+    setRunning(false);
+    addLog("🎉 Fresh ingest complete! Now run 'Enrich with RSS' for view data.");
     refreshStats();
   };
 
@@ -124,7 +187,8 @@ export default function IngestPage() {
           YouTube Data Ingestion
         </h1>
         <p className="text-sm text-[#94A3B8] mt-1">
-          Scrape real YouTube channels into your database using seed channel IDs
+          Scrape REAL YouTube channels into your database using verified channel
+          IDs
         </p>
       </div>
 
@@ -189,6 +253,15 @@ export default function IngestPage() {
         </button>
 
         <button
+          onClick={clearAndReseed}
+          disabled={running}
+          className="inline-flex items-center gap-2 h-10 px-5 rounded-lg bg-transparent border border-[#F87171]/50 text-sm font-semibold text-[#F87171] hover:border-[#F87171] hover:bg-[#F87171]/10 cursor-pointer transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <Trash2 className="w-4 h-4" />
+          Clear &amp; Re-seed
+        </button>
+
+        <button
           onClick={refreshStats}
           className="inline-flex items-center gap-2 h-10 px-4 rounded-lg bg-[#0D1117] border border-[#1E293B] text-sm text-[#94A3B8] hover:text-white cursor-pointer transition-colors"
         >
@@ -211,32 +284,64 @@ export default function IngestPage() {
         ))}
       </div>
 
-      {/* Live Log */}
-      {log.length > 0 && (
-        <div
-          className="rounded-xl border border-[#1E293B] bg-[#080B10] p-4 font-mono text-xs leading-7"
-          style={{ maxHeight: "500px", overflowY: "auto" }}
-        >
-          {log.map((entry, i) => (
-            <div
-              key={i}
-              style={{
-                color: entry.includes("✅")
-                  ? "#34D399"
-                  : entry.includes("❌")
-                    ? "#F87171"
-                    : entry.includes("🚀") || entry.includes("🎉")
-                      ? "#64FFDA"
-                      : entry.includes("📡")
-                        ? "#818CF8"
-                        : "#94A3B8",
-              }}
-            >
-              {entry}
-            </div>
-          ))}
+      {/* Processing indicator */}
+      {running && currentNiche && (
+        <div className="flex items-center gap-3 text-sm text-[#64FFDA] font-mono">
+          <div
+            className="w-3 h-3 border-2 border-[#64FFDA] border-t-transparent rounded-full"
+            style={{ animation: "spin 0.8s linear infinite" }}
+          />
+          Processing {currentNiche}...
         </div>
       )}
+
+      {/* FIX 8: Live Log with proper visibility */}
+      {log.length > 0 && (
+        <div
+          className="rounded-xl border border-[#1E293B] bg-[#080B10] p-5"
+          style={{ maxHeight: "500px", overflowY: "auto" }}
+        >
+          <div className="text-[11px] text-[#64748B] tracking-widest mb-3 uppercase">
+            Ingestion Log — {log.length} entries
+          </div>
+          <div className="font-mono text-xs leading-7">
+            {log.map((entry, i) => (
+              <div
+                key={i}
+                style={{
+                  color: entry.includes("✅")
+                    ? "#34D399"
+                    : entry.includes("❌")
+                      ? "#F87171"
+                      : entry.includes("🚀") || entry.includes("🎉")
+                        ? "#64FFDA"
+                        : entry.includes("📡")
+                          ? "#818CF8"
+                          : entry.includes("📁")
+                            ? "#FCD34D"
+                            : entry.includes("🗑")
+                              ? "#F87171"
+                              : entry.includes("⏭")
+                                ? "#94A3B8"
+                                : "#94A3B8",
+                  paddingLeft: entry.includes("   ") ? "16px" : "0",
+                }}
+              >
+                {entry}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Spin animation */}
+      <style jsx>{`
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+      `}</style>
     </div>
   );
 }
