@@ -7,34 +7,60 @@ import { ArrowRight, Play, Sparkles } from "lucide-react";
 
 function AnimatedCounter({ target, suffix = "", duration = 2000 }: { target: number; suffix?: string; duration?: number }) {
   const [count, setCount] = useState(0);
+  const [mounted, setMounted] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
   const started = useRef(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || !ref.current) return;
+
+    const startAnimation = () => {
+      if (started.current) return;
+      started.current = true;
+
+      let rafId: number;
+      let startTime: number | null = null;
+
+      const animate = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // Cubic easeOut
+        const eased = 1 - Math.pow(1 - progress, 3);
+        setCount(Math.floor(eased * target));
+        if (progress < 1) {
+          rafId = requestAnimationFrame(animate);
+        } else {
+          setCount(target);
+        }
+      };
+
+      rafId = requestAnimationFrame(animate);
+      return () => cancelAnimationFrame(rafId);
+    };
+
+    const el = ref.current;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !started.current) {
-          started.current = true;
-          const startTime = Date.now();
-          const animate = () => {
-            const elapsed = Date.now() - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3);
-            setCount(Math.floor(eased * target));
-            if (progress < 1) requestAnimationFrame(animate);
-          };
-          animate();
+        if (entry.isIntersecting) {
+          startAnimation();
+          observer.disconnect();
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.1 }
     );
-    if (ref.current) observer.observe(ref.current);
+
+    observer.observe(el);
     return () => observer.disconnect();
-  }, [target, duration]);
+  }, [mounted, target, duration]);
 
   return (
     <span ref={ref} className="font-mono tabular-nums">
-      {count.toLocaleString()}{suffix}
+      {mounted ? `${count.toLocaleString()}${suffix}` : `0${suffix}`}
     </span>
   );
 }
@@ -135,7 +161,7 @@ export function Hero() {
             </div>
             <div className="text-center">
               <div className="text-2xl sm:text-3xl font-bold text-[#64FFDA]">
-                <AnimatedCounter target={15} suffix="K+" />
+                <AnimatedCounter target={100} suffix="K+" />
               </div>
               <div className="text-xs sm:text-sm text-[#94A3B8] mt-1">Active Creators</div>
             </div>
