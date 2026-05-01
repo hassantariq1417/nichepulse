@@ -39,6 +39,7 @@ import {
 import {
   calculateNicheScore,
   estimateMonthlyRevenue,
+  estimateMonthlyViews,
 } from "@/lib/scoring";
 
 // ─── Re-export types for convenience ─────────────────────────────
