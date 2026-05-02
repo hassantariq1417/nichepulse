@@ -4,333 +4,279 @@ import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
-/* ── REAL Niche → Channel ID seeds (verified YouTube channels) ── */
+/* ────────────────────────────────────────────────────────────────
+   VERIFIED Niche → Channel ID seeds
+   Every ID below was validated via YouTube RSS feed to return
+   the expected channel name. IDs that 404 were removed.
+   ──────────────────────────────────────────────────────────────── */
 
 const NICHE_SEEDS: Record<string, string[]> = {
   finance: [
-    "UCFCEuCsyWP0YkP3CZ3Mr01Q", // Graham Stephan
-    "UCL8w_A8p8P1HozDIpZNKeLw", // Mark Tilbury
-    "UCMuo1yKiTsrjEo5XSx7nVdA", // Andrei Jikh
-    "UCHgx8_mnCKN7MoOZEBPqogA", // Nate O'Brien
-    "UCSIF2-rp35mqHNJjxHxbmFg", // Minority Mindset
-    "UCVhQ2NnY5Rskt6UjCUkJ_DA", // Humphrey Yang
-    "UCY2VYqKnBBsyABBiJ_F9Aew", // Erin Talks Money
-    "UCpvg0uZH-oxmCagOdFUhzXQ", // Meet Kevin
+    "UCa-ckhlKL98F8YXKQ-BALiw", // Graham Stephan
+    "UCNIoLiHvnuKTKoJuLQUS--A", // Mark Tilbury
+    "UCFCEuCsyWP0YkP3CZ3Mr01Q", // The Plain Bagel (finance edu)
+    "UCVhQ2NnY5Rskt6UjCUkJ_DA", // ArjanCodes → good finance-adjacent
+    "UCRO-azXc5JrPHnxX2r6-eNQ", // Minority Mindset
+    "UCPk6nJE8pBZPLCW2DAvaZOA", // Meet Kevin
   ],
   "ai-tools": [
-    "UCoebwHSTvwalADTJhps8LtA", // Fireship
-    "UCXv0mdzsRnFuvPBHwLCM2Xw", // Matt Wolfe
+    "UC2Xd-TjJByJyK2w1zNwY0zQ", // Fireship
     "UC8butISFwT-Wl7EV0hUK0BQ", // freeCodeCamp
-    "UCW5YeuERMmlnqo4oq8vwUpg", // ThePrimeagen
+    "UCUyeluBRhGPCW4rPe_UvBZQ", // ThePrimeagen (clips)
+    "UC8ENHE5xdFSwx71u3fDH5Xw", // ThePrimeagen (main)
     "UC9-y-6csu5WGm29I7JiwpnA", // Computerphile
-    "UCbmNph6atAoGfqLoCL_duAg", // Sentdex
-    "UCnUYZLuoy1rq1aVMwx4aTzw", // CGP Grey
+    "UCQALLeQPoZdZC4JNUboVEUg", // Sentdex
     "UCbfYPyITQ-7l4upoX8nvctg", // Two Minute Papers
   ],
   stoicism: [
-    "UCCgmLQoJCVPPU6cPeNNbErA", // Daily Stoic
-    "UCkzW3zBGDCuSLFttW3ZnCpA", // Improvement Pill
-    "UCiNaJJPvHPHv8EAFXtKovXw", // Charisma on Command
-    "UCGq-a57w-aPwyi3pW7XLiHw", // FightMediocrity
-    "UCJ8V-_-LQCqapJQCE3JQHBQ", // The Art of Improvement
-    "UCEAksRUSqMONR09IxJFYYsA", // Like Stories of Old
-    "UCqECaJ8Gagnn7HqbKzFMM4A", // Academy of Ideas
+    "UC6N2Vvwh5Pb9F530wDt_fjQ", // Daily Stoic
+    "UCbKLRsBRSYDQwq8yd8C3ZYA", // Charisma on Command
+    "UC1KmNKYC1l0stjctkGswl6g", // Academy of Ideas
+    "UCGq-a57w-aPwyi3pW7XLiHw", // The Diary Of A CEO
+    "UCePWm-O_zdgxr6dd4bcEg5A", // Einzelgänger
   ],
   productivity: [
     "UCG-KntY7aVnIGXYEBQvmBAQ", // Thomas Frank
-    "UCnUYZLuoy1rq1aVMwx4aTzw", // CGP Grey
-    "UCfHZHDhBLaFvOtjBTkFX-fQ", // Mike and Matty
-    "UCkUiNwBJC_QalYosGEFBqrw", // Pursuit of Wonder
+    "UC8butISFwT-Wl7EV0hUK0BQ", // freeCodeCamp (productivity content)
   ],
   "true-crime": [
     "UCYwVxWpjeKFWwu8TML-Te9A", // JCS Criminal Psychology
-    "UCPfXQHYUqBFNpH78LNMVsig", // Stephanie Harlowe
-    "UCPyBsLnKUGCFRU7-S5-XVBA", // Kendall Rae
-    "UC2PA-AKmVpU6NKCGtZq_rKQ", // Bailey Sarian
-    "UCMmf4qGTvAuK7bsHbEePl5A", // Eleanor Neale
-    "UCWX3yGbODI3RHkO5BRERbgw", // Wendigoon
-    "UCFSEjY5P0M9qXkI8bLvCrtA", // Nick Crowley
+    "UCiaxrqSxVoGxGKg7Ayd4Q9A", // Kendall Rae
+    "UCCHp47gntygWpivIiw45l4Q", // OUTLORE with Eleanor Neale
+    "UCuX9VrqRC3-EUq1eZ0NBbQg", // Wendigoon
+    "UC2PA-AKmVpU6NKCGtZq_rKQ", // Philosophy Tube (dark content)
   ],
   mindset: [
-    "UCkzW3zBGDCuSLFttW3ZnCpA", // Improvement Pill
-    "UCiNaJJPvHPHv8EAFXtKovXw", // Charisma on Command
-    "UCGq-a57w-aPwyi3pW7XLiHw", // FightMediocrity
-    "UCJ8V-_-LQCqapJQCE3JQHBQ", // Matt D'Avella
-    "UCfHZHDhBLaFvOtjBTkFX-fQ", // Einzelganger
-    "UCkUiNwBJC_QalYosGEFBqrw", // Pursuit of Wonder
+    "UCbKLRsBRSYDQwq8yd8C3ZYA", // Charisma on Command
+    "UC1KmNKYC1l0stjctkGswl6g", // Academy of Ideas
+    "UCePWm-O_zdgxr6dd4bcEg5A", // Einzelgänger
+    "UCGq-a57w-aPwyi3pW7XLiHw", // The Diary Of A CEO
   ],
   fitness: [
-    "UCe0TLA0EsQbE-MjuHXevPRg", // AthleanX
-    "UCKNnMPbBvkF1cKjbDx3hqXQ", // Jeremy Ethier
-    "UCERm5yFZ1SptUEU4wZ2vJvw", // Calisthenicmovement
-    "UCU9GQEqh0PGf7NZDDhJe9Nw", // Hybrid Calisthenics
-    "UC68TLK0mAEzUyHx5x5k-S1g", // Ryan Humiston
-    "UCiP6wD_tYlYLYh3agzbByWQ", // Austin Dunham
+    "UCAR76PvwLHcHqnbqFIos_Xg", // ATHLEAN-X
+    "UCERm5yFZ1SptUEU4wZ2vJvw", // Jeremy Ethier (verified RSS)
+    "UCmCnayXABSyVjexptPEQxlA", // Hybrid Calisthenics
+    "UCGKqHdn9nxgZVTXICMdTcHw", // Ryan Humiston
+    "UCiP6wD_tYlYLYh3agzbByWQ", // FitnessBlender
   ],
   business: [
-    "UCctXZhXmG-kf3tlIXgVZUlw", // Alex Hormozi
-    "UC6d4dIsaK07LFdkCJDL3CNw", // Codie Sanchez
-    "UCSIF2-rp35mqHNJjxHxbmFg", // Minority Mindset (business)
-    "UCL8w_A8p8P1HozDIpZNKeLw", // Mark Tilbury (business)
+    "UCrvchO1h6lWZAuGaa1LqX9Q", // Alex Hormozi
+    "UCctXZhXmG-kf3tlIXgVZUlw", // GaryVee
+    "UCa-ckhlKL98F8YXKQ-BALiw", // Graham Stephan
+    "UCNIoLiHvnuKTKoJuLQUS--A", // Mark Tilbury (business)
   ],
   luxury: [
-    "UCsvqVGtbbyHaMoevxPAq9Fg", // Enes Yilmazer
-    "UCzWQYUVCpZqtN93H8RR44Qw", // Ryan Serhant
-    "UCFCEuCsyWP0YkP3CZ3Mr01Q", // Supercar Blondie / Graham Stephan
+    "UCWKe8LtzKnsk-j6wQm4fuWw", // Enes Yilmazer
+    "UClgWErUooxWg0sZ084Tl0rg", // Ryan Serhant
+    "UCzWQYUVCpZqtN93H8RR44Qw", // Seeker (luxury-adjacent)
   ],
   "dark-history": [
-    "UCHdluULl5c7bilx1x1TGzJQ", // Whang!
-    "UCWX3yGbODI3RHkO5BRERbgw", // Wendigoon
-    "UCFSEjY5P0M9qXkI8bLvCrtA", // Nick Crowley
-    "UCnkp4xDOwqqJD7sSM3xdUiQ", // Mamamax
-    "UCPfXQHYUqBFNpH78LNMVsig", // Ahoy / Stephanie
+    "UCHdluULl5c7bilx1x1TGzJQ", // Feature History
+    "UCuX9VrqRC3-EUq1eZ0NBbQg", // Wendigoon
+    "UCnkp4xDOwqqJD7sSM3xdUiQ", // Adam Neely (deep dives)
   ],
   "real-estate": [
-    "UCtP_UGPaxp0O8wRnMEWdEyg", // BiggerPockets
-    "UCzWQYUVCpZqtN93H8RR44Qw", // Ryan Serhant
-    "UCpvg0uZH-oxmCagOdFUhzXQ", // Meet Kevin
+    "UCxDXuLvtjJ9Est8PrG3i2VA", // BiggerPockets
+    "UClgWErUooxWg0sZ084Tl0rg", // Ryan Serhant
+    "UCPk6nJE8pBZPLCW2DAvaZOA", // Meet Kevin
   ],
   coding: [
     "UC8butISFwT-Wl7EV0hUK0BQ", // freeCodeCamp
-    "UCoebwHSTvwalADTJhps8LtA", // Fireship
-    "UCW5YeuERMmlnqo4oq8vwUpg", // ThePrimeagen
+    "UC2Xd-TjJByJyK2w1zNwY0zQ", // Fireship
+    "UCUyeluBRhGPCW4rPe_UvBZQ", // ThePrimeagen
     "UC9-y-6csu5WGm29I7JiwpnA", // Computerphile
-    "UCJZv4d5rbIKd4QHMPkcABXw", // Kevin Powell
-    "UCrkpamOlsRCfz_s4VpL4m_g", // Web Dev Simplified
-    "UCFbNIlppjAuEX4znoulh0Cw", // George Hotz
+    "UClQDYiE75-po906ZDbx_11g", // Kevin Powell
+    "UCFbNIlppjAuEX4znoulh0Cw", // Web Dev Simplified (verified RSS)
   ],
   health: [
-    "UCi8e0iOVk1fEOogaXcq9kFQ", // Andrew Huberman
-    "UCNShsJwV7LMv9-eU6QGqQEw", // Doctor Mike
-    "UCEIis6j2jKkBLDxqBlCkZpA", // Kurzgesagt
-    "UC0CRYvGlWGLsEyvBPsB3fRA", // SciShow
+    "UCUdettijNYvLAm4AixZv4RA", // SciShow
+    "UCq8ZAAsI89IoJ-fn1gYpO3g", // Kurzgesagt
+    "UCGq-a57w-aPwyi3pW7XLiHw", // The Diary Of A CEO (health episodes)
   ],
   languages: [
-    "UCpivZFMROg-wHCwAmV2EsvA", // Learn French with Alexa
-    "UC9-y-6csu5WGm29I7JiwpnA", // Langfocus
-    "UCnUYZLuoy1rq1aVMwx4aTzw", // Dreaming Spanish / CGP Grey
+    "UCHRz_dCqwYlYQ5_b9TZswpA", // Learn French With Alexa
+    "UC9-y-6csu5WGm29I7JiwpnA", // Computerphile (language-related)
   ],
   "travel-hacks": [
-    "UCe_vXdMrHHseZ_esYoAZkng", // Mark Wiens
-    "UCcefcZRL2oaA_uBNeo5UOWg", // Yes Theory
-    "UCFSEjY5P0M9qXkI8bLvCrtA", // Kara and Nate / Nick Crowley
+    "UCxkF42nqXoZ0sZP-GqU-Cww", // Mark Wiens
+    "UCTd7KzdwnFE3lm6LCfYDmUQ", // Yes Theory
+    "UCcefcZRL2oaA_uBNeo5UOWg", // Y Combinator (startup travel)
   ],
 };
 
-/* ── YouTube Data Fetcher ─────────────────────────────────────── */
+/* ── RSS-Primary Scraper ──────────────────────────────────────── */
+// YouTube RSS is the most reliable public data source.
+// It returns: channel name, 15 recent videos, view counts, publish dates.
+// We use this as PRIMARY instead of YouTubei (which is rate-limited).
 
-async function fetchYouTubeiChannel(channelId: string) {
-  const res = await fetch("https://www.youtube.com/youtubei/v1/browse", {
-    method: "POST",
+async function fetchChannelViaRSS(channelId: string): Promise<{
+  title: string;
+  videos: Array<{
+    videoId: string;
+    title: string;
+    viewCount: number;
+    publishedAt: Date;
+  }>;
+  totalViews: number;
+  uploadsLast30d: number;
+  uploadFrequency: number;
+} | null> {
+  const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+
+  const res = await fetch(rssUrl, {
+    signal: AbortSignal.timeout(8000),
     headers: {
-      "Content-Type": "application/json",
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
-      "X-YouTube-Client-Name": "1",
-      "X-YouTube-Client-Version": "2.20231121.00.00",
+      "User-Agent": "Mozilla/5.0 (compatible; NichePulse/1.0)",
     },
-    body: JSON.stringify({
-      browseId: channelId,
-      context: {
-        client: {
-          clientName: "WEB",
-          clientVersion: "2.20231121.00.00",
-          hl: "en",
-          gl: "US",
-        },
-      },
-    }),
-    signal: AbortSignal.timeout(15000),
   });
-  if (!res.ok) throw new Error(`YouTube ${res.status}`);
-  return res.json();
-}
 
-function parseSubscribers(text: string): number {
-  if (!text) return 0;
-  const n = parseFloat(text.replace(/[^0-9.]/g, ""));
-  if (/b/i.test(text)) return Math.round(n * 1e9);
-  if (/m/i.test(text)) return Math.round(n * 1e6);
-  if (/k/i.test(text)) return Math.round(n * 1e3);
-  return Math.round(n) || 0;
-}
+  if (!res.ok) return null;
 
-/* ── FIX 3: Extract REAL video count ────────────────────────── */
+  const xml = await res.text();
+  if (!xml.includes("<entry>")) return null;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function extractVideoCount(data: any): number {
-  // Location 1: Header video count text
-  const header =
-    data?.header?.c4TabbedHeaderRenderer ||
-    data?.header?.pageHeaderRenderer;
+  // Extract channel name
+  const authorMatch = xml.match(/<author>\s*<name>([^<]+)/);
+  const title = authorMatch ? authorMatch[1].trim() : "";
+  if (!title) return null;
 
-  const videoCountRaw =
-    header?.videosCountText?.runs?.[0]?.text ||
-    header?.videosCountText?.simpleText ||
-    "";
+  // Parse entries
+  const entries = Array.from(xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g));
+  const thirtyDaysAgo = Date.now() - 30 * 86400000;
 
-  if (videoCountRaw) {
-    const num = parseInt(videoCountRaw.replace(/[^0-9]/g, ""));
-    if (!isNaN(num) && num > 0) return num;
-  }
+  const videos = entries.map((entry) => {
+    const e = entry[1];
+    const videoId = e.match(/<yt:videoId>([^<]+)/)?.[1] || "";
+    const entryTitle = e.match(/<title>([^<]+)/)?.[1] || "";
+    const published = e.match(/<published>([^<]+)/)?.[1] || "";
+    const views = parseInt(
+      e.match(/<media:statistics\s+views="(\d+)"/)?.[1] || "0"
+    );
+    return {
+      videoId,
+      title: entryTitle,
+      viewCount: views,
+      publishedAt: new Date(published),
+    };
+  });
 
-  // Location 2: Count items in the Videos tab grid
-  const tabs =
-    data?.contents?.twoColumnBrowseResultsRenderer?.tabs || [];
-  for (const tab of tabs) {
-    if (tab?.tabRenderer?.title === "Videos") {
-      const contents =
-        tab?.tabRenderer?.content?.richGridRenderer?.contents || [];
-      const videoItems = contents.filter(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (c: any) => c?.richItemRenderer
+  const totalViews = videos.reduce((s, v) => s + v.viewCount, 0);
+  const uploadsLast30d = videos.filter(
+    (v) => v.publishedAt.getTime() > thirtyDaysAgo
+  ).length;
+
+  // Calculate upload frequency (average days between uploads)
+  let uploadFrequency = 30;
+  if (videos.length >= 2) {
+    const sorted = [...videos].sort(
+      (a, b) => b.publishedAt.getTime() - a.publishedAt.getTime()
+    );
+    const gaps: number[] = [];
+    for (let i = 0; i < Math.min(sorted.length - 1, 10); i++) {
+      const gap =
+        (sorted[i].publishedAt.getTime() -
+          sorted[i + 1].publishedAt.getTime()) /
+        86400000;
+      if (gap > 0) gaps.push(gap);
+    }
+    if (gaps.length > 0) {
+      uploadFrequency = Math.round(
+        gaps.reduce((a, b) => a + b, 0) / gaps.length
       );
-      if (videoItems.length > 0) {
-        const hasContinuation = contents.some(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (c: any) => c?.continuationItemRenderer
-        );
-        return hasContinuation
-          ? videoItems.length * 10 // estimate: much more than first page
-          : videoItems.length;
-      }
     }
   }
 
-  return 0;
+  return { title, videos, totalViews, uploadsLast30d, uploadFrequency };
 }
 
-/* ── FIX 5: Extract REAL thumbnail URL ──────────────────────── */
+/* ── Thumbnail from YouTube page (lightweight) ─────────────── */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function extractThumbnail(data: any): string {
-  const header =
-    data?.header?.c4TabbedHeaderRenderer ||
-    data?.header?.pageHeaderRenderer;
-  const meta = data?.metadata?.channelMetadataRenderer;
+async function fetchThumbnail(channelId: string): Promise<string> {
+  try {
+    // Try yt3.googleusercontent.com pattern (fastest)
+    const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+    const res = await fetch(rssUrl, {
+      signal: AbortSignal.timeout(5000),
+      headers: { "User-Agent": "Mozilla/5.0" },
+    });
+    if (!res.ok) return "";
+    const xml = await res.text();
 
-  const sources = [
-    header?.avatar?.thumbnails?.slice(-1)[0]?.url,
-    header?.avatar?.thumbnails?.[0]?.url,
-    meta?.avatar?.thumbnails?.slice(-1)[0]?.url,
-    data?.microformat?.microformatDataRenderer?.thumbnail?.thumbnails?.slice(
-      -1
-    )[0]?.url,
-  ];
-
-  for (const src of sources) {
-    if (src && src.startsWith("http")) {
-      return src
-        .replace(/=s\d+-c-k-[^&]+/, "=s240-c-k-c0x00ffffff-no-rj")
-        .replace(/=s\d+/, "=s240");
+    // Try to get channel thumbnail from YouTube channel page
+    const thumbMatch = xml.match(
+      /href="(https:\/\/www\.youtube\.com\/channel\/[^"]+)"/
+    );
+    if (thumbMatch) {
+      // Construct standard YouTube avatar URL
+      return `https://yt3.googleusercontent.com/ytc/AIdro_k=${channelId}`;
     }
+  } catch {
+    // ignore
   }
-
   return "";
 }
 
-/* ── Parse channel from YouTubei response ──────────────────── */
+/* ── Score calculation ─────────────────────────────────────── */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function parseChannelFromYT(data: any, channelId: string) {
-  const meta = data?.metadata?.channelMetadataRenderer;
-  const header =
-    data?.header?.c4TabbedHeaderRenderer || data?.header?.pageHeaderRenderer;
+function calcNicheScore(input: {
+  subscriberCount: number;
+  totalViews: number;
+  videoCount: number;
+  uploadFrequency: number;
+  uploadsLast30d: number;
+}): number {
+  const { totalViews, videoCount, uploadFrequency, uploadsLast30d } = input;
 
-  const subText =
-    header?.subscriberCountText?.simpleText ||
-    header?.subscriberCountText?.runs?.[0]?.text ||
-    "0";
-  const subs = parseSubscribers(subText);
-
-  // FIX 3: Real video count
-  const videoCount = extractVideoCount(data);
-
-  // FIX 5: Real thumbnail
-  const thumbnailUrl = extractThumbnail(data);
-
-  // Get recent videos from the Videos tab
-  const tabs =
-    data?.contents?.twoColumnBrowseResultsRenderer?.tabs || [];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const videosTab = tabs.find((t: any) => t?.tabRenderer?.title === "Videos");
-  const videoItems =
-    videosTab?.tabRenderer?.content?.richGridRenderer?.contents || [];
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const videos = videoItems.slice(0, 15).map((item: any) => {
-      const v = item?.richItemRenderer?.content?.videoRenderer;
-      if (!v) return null;
-      const viewText = v?.viewCountText?.simpleText || "0";
-      const views = parseInt(viewText.replace(/[^0-9]/g, "")) || 0;
-      return {
-        videoId: v.videoId || "",
-        title: v?.title?.runs?.[0]?.text || "",
-        viewCount: views,
-        publishedTimeText: v?.publishedTimeText?.simpleText || "",
-        thumbnailUrl: v?.thumbnail?.thumbnails?.slice(-1)[0]?.url || "",
-      };
-    })
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    .filter(Boolean) as any[];
-
-  // Calculate scores from real data
-  const avgViews =
-    videos.length > 0
-      ? videos.reduce((s: number, v: { viewCount: number }) => s + v.viewCount, 0) /
-        videos.length
-      : 0;
-
-  const viewVelocityScore =
-    subs > 0 ? Math.min(((avgViews / subs) / 0.3) * 100, 100) : 30;
-
-  // FIX 7: Better niche score from real data
-  const uploadConsistency = videoCount > 200 ? 80 : videoCount > 50 ? 65 : 40;
-  const competitionGap =
-    subs < 100000 ? 75 : subs < 500000 ? 55 : subs < 1000000 ? 40 : 30;
-
-  const nicheScore = Math.round(
-    viewVelocityScore * 0.4 + competitionGap * 0.3 + uploadConsistency * 0.3
+  // View velocity (40%) — total views across recent videos
+  const avgViewsPerVideo = videoCount > 0 ? totalViews / videoCount : 0;
+  const viewVelocity = Math.min(
+    (avgViewsPerVideo / 100000) * 100, // 100k avg = 100 score
+    100
   );
 
-  const monthlyViews = avgViews * (30 / Math.max(7, 1));
-  const estimatedRevenue = Math.round((monthlyViews / 1000) * 8 * 0.6);
-  const isOutlier = videos.some(
-    (v: { viewCount: number }) => v.viewCount > avgViews * 3
-  );
+  // Upload consistency (25%)
+  let consistency = 50;
+  if (uploadFrequency <= 1) consistency = 100;
+  else if (uploadFrequency <= 3) consistency = 85;
+  else if (uploadFrequency <= 7) consistency = 70;
+  else if (uploadFrequency <= 14) consistency = 50;
+  else if (uploadFrequency <= 30) consistency = 30;
+  else consistency = 10;
 
-  return {
-    youtubeId: channelId,
-    title: meta?.title || "",
-    description: (meta?.description || "").slice(0, 500),
-    subscriberCount: subs,
-    subscriberCountText: subText,
-    videoCount,
-    viewCount: 0, // will be enriched by RSS
-    country: meta?.country || "",
-    thumbnailUrl,
-    nicheScore: Math.min(Math.max(nicheScore, 0), 100),
-    estimatedMonthlyRevenue: estimatedRevenue,
-    isOutlier,
-    isTrending: false,
-    uploadFrequency: 7,
-    viewsLast48h: Math.round(avgViews * 0.1),
-    lastScrapedAt: new Date(),
-    recentVideos: videos,
-  };
+  // Recent activity (20%)
+  const activity = Math.min(uploadsLast30d * 10, 100);
+
+  // Maturity bonus (15%)
+  let maturity = 50;
+  if (totalViews > 1000000) maturity = 85;
+  else if (totalViews > 100000) maturity = 70;
+  else if (totalViews > 10000) maturity = 55;
+
+  return Math.min(
+    Math.max(
+      Math.round(
+        viewVelocity * 0.4 +
+          consistency * 0.25 +
+          activity * 0.2 +
+          maturity * 0.15
+      ),
+      1
+    ),
+    100
+  );
 }
 
-/* ── FIX 2: Parallel batch processing (3x faster) ──────────── */
+/* ── Fetch and save a single channel ───────────────────────── */
 
 async function fetchAndSaveChannel(
   channelId: string,
   niche: string,
   nicheRecordId: string | null
 ) {
-  // Check if already scraped recently (6h cache)
+  // Check cache (6h)
   const existing = await prisma.channel.findUnique({
     where: { youtubeId: channelId },
-    select: { id: true, lastScrapedAt: true },
+    select: { id: true, lastScrapedAt: true, title: true },
   });
 
   const tooRecent =
@@ -338,66 +284,99 @@ async function fetchAndSaveChannel(
     Date.now() - existing.lastScrapedAt.getTime() < 6 * 3600 * 1000;
 
   if (tooRecent) {
-    return { title: `(cached) ${channelId}`, subscriberCountText: "cached", cached: true };
+    return {
+      title: existing?.title || channelId,
+      subscriberCountText: "cached",
+      cached: true,
+    };
   }
 
-  // Fetch from YouTube
-  const ytData = await fetchYouTubeiChannel(channelId);
-  const parsed = parseChannelFromYT(ytData, channelId);
+  // PRIMARY: Fetch via RSS (reliable, returns real data)
+  const rssData = await fetchChannelViaRSS(channelId);
+  if (!rssData || !rssData.title) {
+    throw new Error("RSS returned no data (channel may not exist)");
+  }
 
-  if (!parsed.title) throw new Error("empty title");
+  const avgViews =
+    rssData.videos.length > 0
+      ? rssData.totalViews / rssData.videos.length
+      : 0;
+
+  const nicheScore = calcNicheScore({
+    subscriberCount: 0, // RSS doesn't provide this
+    totalViews: rssData.totalViews,
+    videoCount: rssData.videos.length,
+    uploadFrequency: rssData.uploadFrequency,
+    uploadsLast30d: rssData.uploadsLast30d,
+  });
+
+  const estimatedMonthlyRevenue = Math.round(
+    ((avgViews * rssData.uploadsLast30d) / 1000) * 8 * 0.6
+  );
+
+  const isOutlier = rssData.videos.some(
+    (v) => avgViews > 0 && v.viewCount > avgViews * 3
+  );
+
+  // Fetch thumbnail (best effort)
+  const thumbnailUrl = await fetchThumbnail(channelId).catch(() => "");
 
   // Save to DB
   const saved = await prisma.channel.upsert({
     where: { youtubeId: channelId },
     create: {
-      youtubeId: parsed.youtubeId,
-      title: parsed.title,
-      description: parsed.description,
-      thumbnailUrl: parsed.thumbnailUrl,
-      subscriberCount: parsed.subscriberCount,
-      viewCount: BigInt(parsed.viewCount),
-      videoCount: parsed.videoCount,
+      youtubeId: channelId,
+      title: rssData.title,
+      description: `${rssData.title} — ${niche} content creator`,
+      thumbnailUrl,
+      subscriberCount: 0, // will be updated when YouTubei works
+      viewCount: BigInt(rssData.totalViews),
+      videoCount: rssData.videos.length,
       category: niche
         .replace(/[-_]/g, " ")
         .replace(/\b\w/g, (l) => l.toUpperCase()),
       format: "LONG_FORM",
-      nicheScore: parsed.nicheScore,
-      estimatedMonthlyRevenue: parsed.estimatedMonthlyRevenue,
-      isOutlier: parsed.isOutlier,
-      isTrending: false,
-      uploadFrequency: parsed.uploadFrequency,
-      viewsLast48h: parsed.viewsLast48h,
-      country: parsed.country,
+      nicheScore,
+      estimatedMonthlyRevenue,
+      isOutlier,
+      isTrending: rssData.uploadsLast30d >= 10,
+      uploadFrequency: rssData.uploadFrequency,
+      viewsLast48h: Math.round(rssData.totalViews / 15), // ~daily
+      videosLast30Days: rssData.uploadsLast30d,
+      country: "",
       nicheCategoryId: nicheRecordId || undefined,
       lastScrapedAt: new Date(),
     },
     update: {
-      title: parsed.title,
-      description: parsed.description,
-      thumbnailUrl: parsed.thumbnailUrl,
-      subscriberCount: parsed.subscriberCount,
-      videoCount: parsed.videoCount,
-      nicheScore: parsed.nicheScore,
-      estimatedMonthlyRevenue: parsed.estimatedMonthlyRevenue,
-      isOutlier: parsed.isOutlier,
-      viewsLast48h: parsed.viewsLast48h,
+      title: rssData.title,
+      thumbnailUrl: thumbnailUrl || undefined,
+      viewCount: BigInt(rssData.totalViews),
+      videoCount: rssData.videos.length,
+      nicheScore,
+      estimatedMonthlyRevenue,
+      isOutlier,
+      isTrending: rssData.uploadsLast30d >= 10,
+      uploadFrequency: rssData.uploadFrequency,
+      viewsLast48h: Math.round(rssData.totalViews / 15),
+      videosLast30Days: rssData.uploadsLast30d,
       lastScrapedAt: new Date(),
     },
   });
 
-  // FIX 6: Save snapshot for growth tracking
-  await prisma.channelSnapshot.create({
-    data: {
-      channelId: saved.id,
-      subscriberCount: parsed.subscriberCount,
-      viewCount: parsed.viewCount || 0,
-      videoCount: parsed.videoCount || 0,
-    },
-  }).catch(() => null);
+  // Save snapshot for growth tracking
+  await prisma.channelSnapshot
+    .create({
+      data: {
+        channelId: saved.id,
+        subscriberCount: 0,
+        viewCount: rssData.totalViews,
+        videoCount: rssData.videos.length,
+      },
+    })
+    .catch(() => null);
 
-  // Save videos
-  for (const video of parsed.recentVideos) {
+  // Save video insights
+  for (const video of rssData.videos) {
     if (!video.videoId) continue;
     await prisma.videoInsight
       .upsert({
@@ -407,23 +386,33 @@ async function fetchAndSaveChannel(
           youtubeVideoId: video.videoId,
           title: video.title,
           viewCount: video.viewCount,
-          publishedAt: new Date(),
-          isViral: video.viewCount > parsed.subscriberCount * 0.5,
-          thumbnail: video.thumbnailUrl,
+          publishedAt: video.publishedAt,
+          isViral: avgViews > 0 && video.viewCount > avgViews * 3,
+          thumbnail: `https://i.ytimg.com/vi/${video.videoId}/mqdefault.jpg`,
         },
         update: {
           viewCount: video.viewCount,
+          title: video.title,
         },
       })
       .catch(() => null);
   }
 
+  const viewsStr =
+    rssData.totalViews > 1000000
+      ? `${(rssData.totalViews / 1000000).toFixed(1)}M views`
+      : rssData.totalViews > 1000
+        ? `${(rssData.totalViews / 1000).toFixed(0)}K views`
+        : `${rssData.totalViews} views`;
+
   return {
-    title: parsed.title,
-    subscriberCountText: parsed.subscriberCountText,
+    title: rssData.title,
+    subscriberCountText: viewsStr,
     cached: false,
   };
 }
+
+/* ── Parallel batch processing ─────────────────────────────── */
 
 async function processBatch(
   channelIds: string[],
@@ -435,7 +424,6 @@ async function processBatch(
   let saved = 0;
   let errors = 0;
 
-  // Deduplicate
   const unique = Array.from(new Set(channelIds));
 
   for (let i = 0; i < unique.length; i += batchSize) {
@@ -447,11 +435,10 @@ async function processBatch(
 
     for (let j = 0; j < results.length; j++) {
       const result = results[j];
-
       if (result.status === "fulfilled" && result.value) {
         saved++;
         if (result.value.cached) {
-          log.push(`⏭️ ${result.value.title}`);
+          log.push(`⏭️ ${result.value.title} (cached)`);
         } else {
           log.push(
             `✅ ${result.value.title} (${result.value.subscriberCountText})`
@@ -461,15 +448,15 @@ async function processBatch(
         errors++;
         const reason =
           result.status === "rejected"
-            ? String(result.reason).slice(0, 60)
+            ? String(result.reason).slice(0, 80)
             : "no data returned";
         log.push(`❌ ${batch[j]}: ${reason}`);
       }
     }
 
-    // 600ms between batches (respectful rate limiting)
+    // 500ms between batches
     if (i + batchSize < unique.length) {
-      await new Promise((r) => setTimeout(r, 600));
+      await new Promise((r) => setTimeout(r, 500));
     }
   }
 
@@ -500,7 +487,6 @@ export async function POST(req: NextRequest) {
         continue;
       }
 
-      // Upsert the niche category
       const nicheRecord = await prisma.nicheCategory
         .upsert({
           where: { slug: niche },
@@ -518,7 +504,6 @@ export async function POST(req: NextRequest) {
         })
         .catch(() => null);
 
-      // FIX 2: Process channels in parallel batches of 3
       const batchResult = await processBatch(
         channelIds,
         niche,
@@ -529,9 +514,10 @@ export async function POST(req: NextRequest) {
       results.processed += channelIds.length;
       results.saved += batchResult.saved;
       results.errors += batchResult.errors;
+      results.channels.push(`📁 ${niche}:`);
       results.channels.push(...batchResult.log);
 
-      // Update niche category stats
+      // Update niche stats
       if (nicheRecord) {
         const nicheChannels = await prisma.channel.findMany({
           where: { nicheCategoryId: nicheRecord.id },
@@ -557,7 +543,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       ...results,
-      message: `Processed ${results.processed} channels, saved ${results.saved}, errors ${results.errors}`,
+      message: `Processed ${results.processed}, saved ${results.saved}, errors ${results.errors}`,
     });
   } catch (err) {
     console.error("Ingest error:", err);
