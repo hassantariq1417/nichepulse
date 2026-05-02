@@ -14,10 +14,12 @@ const NICHE_SEEDS: Record<string, string[]> = {
   finance: [
     "UCa-ckhlKL98F8YXKQ-BALiw", // Graham Stephan
     "UCNIoLiHvnuKTKoJuLQUS--A", // Mark Tilbury
-    "UCFCEuCsyWP0YkP3CZ3Mr01Q", // The Plain Bagel (finance edu)
-    "UCVhQ2NnY5Rskt6UjCUkJ_DA", // ArjanCodes → good finance-adjacent
+    "UCFCEuCsyWP0YkP3CZ3Mr01Q", // The Plain Bagel
     "UCRO-azXc5JrPHnxX2r6-eNQ", // Minority Mindset
     "UCPk6nJE8pBZPLCW2DAvaZOA", // Meet Kevin
+    "UC7eBNeDW1GQf2NJQ6G6gAxw", // Ramsey Solutions (Dave Ramsey)
+    "UCMPcupZziOB8R6zEbw_elvw", // The Money Guy Show
+    "UCAqAp1uh_5-tmEimhSqtoyw", // Caleb Hammer
   ],
   "ai-tools": [
     "UC2Xd-TjJByJyK2w1zNwY0zQ", // Fireship
@@ -27,53 +29,73 @@ const NICHE_SEEDS: Record<string, string[]> = {
     "UC9-y-6csu5WGm29I7JiwpnA", // Computerphile
     "UCQALLeQPoZdZC4JNUboVEUg", // Sentdex
     "UCbfYPyITQ-7l4upoX8nvctg", // Two Minute Papers
+    "UCdBK94H6oZT2Q7l0-b0xmMg", // Linus Tech Tips
+    "UCG7J20LhUeLl6y_Emi7OJrA", // MKBHD (Marques Brownlee)
+    "UCOuGATIAbd2DvzJmUgXn2IQ", // NetworkChuck
+    "UCGkpFfEMF0eMJlh9xXj2lMw", // ColdFusion
   ],
   stoicism: [
     "UC6N2Vvwh5Pb9F530wDt_fjQ", // Daily Stoic
     "UCbKLRsBRSYDQwq8yd8C3ZYA", // Charisma on Command
-    "UC1KmNKYC1l0stjctkGswl6g", // Academy of Ideas
+    "UC1KmNKYC1l0stjctkGswl6g", // Academy of Ideas / After Skool
     "UCGq-a57w-aPwyi3pW7XLiHw", // The Diary Of A CEO
     "UCePWm-O_zdgxr6dd4bcEg5A", // Einzelgänger
+    "UCqRnyszSh6EslfZA-BJfftw", // Better Ideas
   ],
   productivity: [
     "UCG-KntY7aVnIGXYEBQvmBAQ", // Thomas Frank
-    "UC8butISFwT-Wl7EV0hUK0BQ", // freeCodeCamp (productivity content)
+    "UChfo46ZNOV-vtehDc25A1Ug", // Ali Abdaal
+    "UCWo4IA01TXzBeGJJKWHOG9g", // Jeff Su
   ],
   "true-crime": [
     "UCYwVxWpjeKFWwu8TML-Te9A", // JCS Criminal Psychology
-    "UCiaxrqSxVoGxGKg7Ayd4Q9A", // Kendall Rae
-    "UCCHp47gntygWpivIiw45l4Q", // OUTLORE with Eleanor Neale
+    "UCiaxrqSxVoGxGKg7Ayd4Q9A", // Kendall Rae / Mile Higher
+    "UCCHp47gntygWpivIiw45l4Q", // Eleanor Neale
     "UCuX9VrqRC3-EUq1eZ0NBbQg", // Wendigoon
-    "UC2PA-AKmVpU6NKCGtZq_rKQ", // Philosophy Tube (dark content)
+    "UC2PA-AKmVpU6NKCGtZq_rKQ", // Philosophy Tube
+    "UCaIswiqbPnwmwQu5xyjtLDw", // That Chapter
+    "UC5twq_BoIOBl1gdNseZq7bA", // Lazy Masquerade
+    "UCzwtKPc68r580mPesHscivw", // Nexpo
+    "UCHv7ZckTJweMD0hp9mGR4EA", // ScareTheater
   ],
   mindset: [
     "UCbKLRsBRSYDQwq8yd8C3ZYA", // Charisma on Command
     "UC1KmNKYC1l0stjctkGswl6g", // Academy of Ideas
     "UCePWm-O_zdgxr6dd4bcEg5A", // Einzelgänger
     "UCGq-a57w-aPwyi3pW7XLiHw", // The Diary Of A CEO
+    "UCqRnyszSh6EslfZA-BJfftw", // Better Ideas
+    "UCsT0YIqwnpJCM-mx7-gSA4Q", // TED
+    "UCAuUUnT6oDeKwE6v1NGQxug", // TEDx Talks
   ],
   fitness: [
     "UCAR76PvwLHcHqnbqFIos_Xg", // ATHLEAN-X
-    "UCERm5yFZ1SptUEU4wZ2vJvw", // Jeremy Ethier (verified RSS)
+    "UCERm5yFZ1SptUEU4wZ2vJvw", // Jeremy Ethier
     "UCmCnayXABSyVjexptPEQxlA", // Hybrid Calisthenics
     "UCGKqHdn9nxgZVTXICMdTcHw", // Ryan Humiston
     "UCiP6wD_tYlYLYh3agzbByWQ", // FitnessBlender
+    "UCjTp-nBKswYLumqmVeBPwYw", // Jeff Nippard
+    "UCndvbnArPZw7jHRmE9qBcFg", // Buff Dudes
   ],
   business: [
     "UCrvchO1h6lWZAuGaa1LqX9Q", // Alex Hormozi
-    "UCctXZhXmG-kf3tlIXgVZUlw", // GaryVee
+    "UChjfv8-vAA1CZA84f-h5X_Q", // GaryVee (verified main)
     "UCa-ckhlKL98F8YXKQ-BALiw", // Graham Stephan
-    "UCNIoLiHvnuKTKoJuLQUS--A", // Mark Tilbury (business)
+    "UCNIoLiHvnuKTKoJuLQUS--A", // Mark Tilbury
+    "UCAiLfjNXkNv24uhpzUgPa6A", // MrBeast
+    "UCJZv4d5rbIKd4QHMPkcABXw", // Joma Tech
   ],
   luxury: [
     "UCWKe8LtzKnsk-j6wQm4fuWw", // Enes Yilmazer
     "UClgWErUooxWg0sZ084Tl0rg", // Ryan Serhant
-    "UCzWQYUVCpZqtN93H8RR44Qw", // Seeker (luxury-adjacent)
+    "UCzWQYUVCpZqtN93H8RR44Qw", // Seeker
   ],
   "dark-history": [
     "UCHdluULl5c7bilx1x1TGzJQ", // Feature History
     "UCuX9VrqRC3-EUq1eZ0NBbQg", // Wendigoon
-    "UCnkp4xDOwqqJD7sSM3xdUiQ", // Adam Neely (deep dives)
+    "UCnkp4xDOwqqJD7sSM3xdUiQ", // Adam Neely
+    "UCzwtKPc68r580mPesHscivw", // Nexpo
+    "UCHv7ZckTJweMD0hp9mGR4EA", // ScareTheater
+    "UCTWKe1zATFV6d0o6oLS9sgw", // Wendover Productions
   ],
   "real-estate": [
     "UCxDXuLvtjJ9Est8PrG3i2VA", // BiggerPockets
@@ -83,24 +105,36 @@ const NICHE_SEEDS: Record<string, string[]> = {
   coding: [
     "UC8butISFwT-Wl7EV0hUK0BQ", // freeCodeCamp
     "UC2Xd-TjJByJyK2w1zNwY0zQ", // Fireship
-    "UCUyeluBRhGPCW4rPe_UvBZQ", // ThePrimeagen
+    "UC8ENHE5xdFSwx71u3fDH5Xw", // ThePrimeagen
     "UC9-y-6csu5WGm29I7JiwpnA", // Computerphile
     "UClQDYiE75-po906ZDbx_11g", // Kevin Powell
-    "UCFbNIlppjAuEX4znoulh0Cw", // Web Dev Simplified (verified RSS)
+    "UCFbNIlppjAuEX4znoulh0Cw", // Web Dev Simplified
+    "UCZirJBCIZsSgsSPn-uWVSfg", // Tech With Tim
+    "UCwE6vJXm1I3XmMA6g92HXxw", // The Cherno
+    "UCJZv4d5rbIKd4QHMPkcABXw", // Joma Tech
+    "UC1_uAIS3r8Vu6JjXWvastJg", // 3Blue1Brown
   ],
   health: [
     "UCUdettijNYvLAm4AixZv4RA", // SciShow
     "UCq8ZAAsI89IoJ-fn1gYpO3g", // Kurzgesagt
-    "UCGq-a57w-aPwyi3pW7XLiHw", // The Diary Of A CEO (health episodes)
+    "UCGq-a57w-aPwyi3pW7XLiHw", // The Diary Of A CEO
+    "UCpWhiwlOPxOmwQu5xyjtLDw", // Dr. Eric Berg DC
+    "UCsR06Qx_cG-gZudSJZUkDnw", // MedCram
+    "UCin0m13qWv3-051xlWlHamA", // Veritasium
+    "UC513PdAP2-jWkJunTh5kXRw", // Mark Rober
+    "UC8VkNBOwvsTlFjoSnNSMmxw", // SmarterEveryDay
   ],
   languages: [
     "UCHRz_dCqwYlYQ5_b9TZswpA", // Learn French With Alexa
-    "UC9-y-6csu5WGm29I7JiwpnA", // Computerphile (language-related)
   ],
   "travel-hacks": [
     "UCxkF42nqXoZ0sZP-GqU-Cww", // Mark Wiens
-    "UCTd7KzdwnFE3lm6LCfYDmUQ", // Yes Theory
-    "UCcefcZRL2oaA_uBNeo5UOWg", // Y Combinator (startup travel)
+    "UCTd7KzdwnFE3lm6LCfYDmUQ", // Yes Theory / Seek Discomfort
+    "UC7xP-m9hfVmFqNLaKGgIlzA", // Drew Binsky
+    "UCneNuMawbfqgXCew2EdZMcQ", // Kara and Nate
+    "UCi7KXaqqW_h6ifNVnudH0kQ", // Lost LeBlanc
+    "UC7KbIaEOuY7H2j-cvhJ3mYA", // Johnny Harris
+    "UC176GAQozKKjhz62H8u9vQQ", // Real Engineering
   ],
 };
 
