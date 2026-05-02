@@ -2,7 +2,9 @@ import { Navbar } from "@/components/landing/Navbar";
 import { Hero } from "@/components/landing/Hero";
 import { SocialProof } from "@/components/landing/SocialProof";
 import { Features } from "@/components/landing/Features";
+import { WhyNichePulse } from "@/components/landing/WhyNichePulse";
 import { HowItWorks } from "@/components/landing/HowItWorks";
+import { Comparison } from "@/components/landing/Comparison";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { EarlyAccess } from "@/components/landing/EarlyAccess";
 import { Pricing } from "@/components/landing/Pricing";
@@ -17,7 +19,9 @@ export default function Home() {
       <Hero />
       <SocialProof />
       <Features />
+      <WhyNichePulse />
       <HowItWorks />
+      <Comparison />
       <Testimonials />
       <EarlyAccess />
       <Pricing />
@@ -27,3 +31,4 @@ export default function Home() {
     </main>
   );
 }
+

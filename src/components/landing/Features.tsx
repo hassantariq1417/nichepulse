@@ -6,6 +6,8 @@ import {
   TrendingUp,
   BarChart3,
   Sparkles,
+  Hash,
+  FileText,
 } from "lucide-react";
 
 const features = [
@@ -13,15 +15,15 @@ const features = [
     icon: Search,
     title: "Niche Finder Engine",
     description:
-      "Score niches by growth velocity, competition density, and revenue potential with our proprietary algorithm. Filter by CPM, subscriber count, and trend direction.",
+      "Score niches by growth velocity, competition density, and revenue potential. Smart filter tabs instantly surface outliers, high-CPM niches, and declining trends to avoid.",
     color: "#64FFDA",
     tag: "Core Feature",
   },
   {
     icon: Brain,
-    title: "Claude AI Recommendations",
+    title: "AI Deep Analysis",
     description:
-      "Get AI-powered niche suggestions tailored to your content style, budget, and growth goals. Personalized strategies, not generic advice.",
+      "Claude AI generates full strategy briefs for any niche — content gap analysis, risk assessment, competitor snapshots, and a recommended content calendar.",
     color: "#F472B6",
     tag: "AI Powered",
   },
@@ -29,17 +31,33 @@ const features = [
     icon: TrendingUp,
     title: "Outlier Detection",
     description:
-      "Automatically discover small channels getting disproportionate views. Find the signals before they become trends.",
+      "Automatically discover small channels getting disproportionate views. Find hidden gems with high scores but low subscribers before anyone else.",
     color: "#64FFDA",
     tag: "Real-time",
+  },
+  {
+    icon: FileText,
+    title: "Content Studio",
+    description:
+      "Generate click-worthy titles, SEO descriptions, script outlines, and attention-grabbing hooks — all optimized for your chosen niche. No other niche tool has this.",
+    color: "#818CF8",
+    tag: "Exclusive",
+  },
+  {
+    icon: Hash,
+    title: "Keyword Discovery",
+    description:
+      "Explore keywords with aggregated channel performance — avg views per video, avg subscribers, CPM rates, channel age, and competition levels.",
+    color: "#FCD34D",
+    tag: "New",
   },
   {
     icon: BarChart3,
     title: "Revenue Analytics",
     description:
-      "Estimate monthly earnings per niche using CPM data, view velocity, and monetization benchmarks. Know what niches actually pay.",
-    color: "#F472B6",
-    tag: "Data-Driven",
+      "Live RPM calculator, CPM comparison by niche, revenue leaderboard, and earnings estimator. Know what niches actually pay before you start.",
+    color: "#34D399",
+    tag: "Live",
   },
 ];
 
@@ -68,7 +86,7 @@ export function Features() {
         </div>
 
         {/* Feature Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {features.map((feature) => (
             <div
               key={feature.title}
