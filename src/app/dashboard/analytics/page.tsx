@@ -313,6 +313,146 @@ export default function AnalyticsPage() {
           </div>
         </div>
       </div>
+
+      {/* RPM Calculator — NexLev's says "Coming Soon", ours is LIVE */}
+      <div className="rounded-xl border border-[#1E293B] bg-[#0D1117]/60 p-6">
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+            <DollarSign className="w-4 h-4 text-[#34D399]" />
+            RPM Calculator
+            <span className="px-2 py-0.5 rounded text-[9px] font-medium bg-[#34D399]/10 text-[#34D399]">
+              LIVE
+            </span>
+          </h3>
+          <span className="text-[10px] text-[#94A3B8]">
+            Competitors: &quot;Coming Soon&quot; — We&apos;re ahead.
+          </span>
+        </div>
+        <RPMCalculator topNiches={topNiches} />
+      </div>
+
+      {/* Revenue Leaderboard */}
+      <div className="rounded-xl border border-[#1E293B] bg-[#0D1117]/60 p-6">
+        <h3 className="text-sm font-semibold text-white flex items-center gap-2 mb-5">
+          <TrendingUp className="w-4 h-4 text-[#FCD34D]" />
+          Revenue Leaderboard
+        </h3>
+        <div className="space-y-2">
+          {[...topNiches]
+            .sort((a, b) => b.estimatedCPM * b.channelCount - a.estimatedCPM * a.channelCount)
+            .slice(0, 8)
+            .map((niche, i) => {
+              const estRevenue = niche.estimatedCPM * niche.channelCount * 10; // rough estimate
+              const maxRev = topNiches.reduce((max, n) => Math.max(max, n.estimatedCPM * n.channelCount * 10), 1);
+              const pct = (estRevenue / maxRev) * 100;
+              return (
+                <div key={niche.name} className="flex items-center gap-3">
+                  <span className={`w-6 text-center text-xs font-bold ${
+                    i === 0 ? "text-[#FCD34D]" : i === 1 ? "text-[#94A3B8]" : i === 2 ? "text-[#CD7F32]" : "text-[#64748B]"
+                  }`}>
+                    #{i + 1}
+                  </span>
+                  <span className="text-sm text-white w-[140px] truncate">{niche.name}</span>
+                  <div className="flex-1 h-2.5 rounded-full bg-[#1E293B] overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-[#FCD34D]/60 to-[#FCD34D]"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  <span className="text-xs font-mono text-[#34D399] w-[80px] text-right">
+                    ${formatNumber(Math.round(estRevenue))}/mo
+                  </span>
+                  <span className="text-[10px] text-[#94A3B8] w-[50px] text-right">
+                    ${niche.estimatedCPM.toFixed(0)} CPM
+                  </span>
+                </div>
+              );
+            })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── RPM Calculator Component ─────────────────────────────────────────
+function RPMCalculator({ topNiches }: { topNiches: StatsData["topNiches"] }) {
+  const [views, setViews] = useState(100000);
+  const [selectedNiche, setSelectedNiche] = useState(topNiches[0]?.name || "");
+
+  const cpm = topNiches.find((n) => n.name === selectedNiche)?.estimatedCPM || 5;
+  const estimatedEarnings = (views / 1000) * cpm;
+  const monthlyEarnings = estimatedEarnings * 4; // ~4 videos/month
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Inputs */}
+      <div className="space-y-4">
+        <div>
+          <label className="text-[10px] text-[#94A3B8] uppercase tracking-wider block mb-1.5">
+            Select Niche
+          </label>
+          <select
+            value={selectedNiche}
+            onChange={(e) => setSelectedNiche(e.target.value)}
+            className="w-full h-10 px-3 rounded-lg bg-[#1E293B]/50 border border-[#1E293B] text-sm text-white appearance-none cursor-pointer focus:outline-none focus:border-[#34D399]/50"
+          >
+            {topNiches.map((n) => (
+              <option key={n.name} value={n.name}>
+                {n.name} (CPM: ${n.estimatedCPM.toFixed(0)})
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="text-[10px] text-[#94A3B8] uppercase tracking-wider block mb-1.5">
+            Views Per Video
+          </label>
+          <input
+            type="range"
+            min={1000}
+            max={5000000}
+            step={1000}
+            value={views}
+            onChange={(e) => setViews(Number(e.target.value))}
+            className="w-full accent-[#34D399]"
+          />
+          <div className="flex justify-between text-[10px] text-[#94A3B8] mt-1">
+            <span>1K</span>
+            <span className="text-white font-mono font-bold text-sm">
+              {formatNumber(views)} views
+            </span>
+            <span>5M</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Results */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="p-4 rounded-xl bg-[#34D399]/5 border border-[#34D399]/10">
+          <div className="text-[10px] text-[#94A3B8] uppercase tracking-wider mb-1">Per Video</div>
+          <div className="text-xl font-mono font-bold text-[#34D399]">
+            ${estimatedEarnings.toFixed(0)}
+          </div>
+        </div>
+        <div className="p-4 rounded-xl bg-[#FCD34D]/5 border border-[#FCD34D]/10">
+          <div className="text-[10px] text-[#94A3B8] uppercase tracking-wider mb-1">Monthly (4 vids)</div>
+          <div className="text-xl font-mono font-bold text-[#FCD34D]">
+            ${formatNumber(Math.round(monthlyEarnings))}
+          </div>
+        </div>
+        <div className="p-4 rounded-xl bg-[#818CF8]/5 border border-[#818CF8]/10">
+          <div className="text-[10px] text-[#94A3B8] uppercase tracking-wider mb-1">CPM Rate</div>
+          <div className="text-xl font-mono font-bold text-[#818CF8]">
+            ${cpm.toFixed(2)}
+          </div>
+        </div>
+        <div className="p-4 rounded-xl bg-[#64FFDA]/5 border border-[#64FFDA]/10">
+          <div className="text-[10px] text-[#94A3B8] uppercase tracking-wider mb-1">Yearly Est.</div>
+          <div className="text-xl font-mono font-bold text-[#64FFDA]">
+            ${formatNumber(Math.round(monthlyEarnings * 12))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   Search,
   ArrowUpRight,
@@ -372,6 +373,14 @@ export default function NicheFinderPage() {
                       )}
                     </div>
                   ))}
+                  <Link
+                    href={`/dashboard/niches/${niche.id}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="inline-flex items-center gap-1.5 mt-3 px-3 py-2 rounded-lg bg-[#818CF8]/10 border border-[#818CF8]/20 text-xs font-medium text-[#818CF8] hover:bg-[#818CF8]/20 transition-colors cursor-pointer"
+                  >
+                    <Sparkles className="w-3 h-3" />
+                    Deep AI Analysis →
+                  </Link>
                 </div>
               )}
             </div>
