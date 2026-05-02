@@ -7,12 +7,37 @@ import {
   ArrowDownRight,
   Users,
   DollarSign,
-  ChevronDown,
   Sparkles,
   BarChart3,
+  Flame,
+  TrendingUp,
+  TrendingDown,
+  Shield,
+  Play,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getScoreBadgeClasses } from "@/lib/scoring";
+
+interface VideoData {
+  id: string;
+  title: string;
+  thumbnail: string | null;
+  viewCount: number;
+  publishedAt: string;
+}
+
+interface ChannelInNiche {
+  id: string;
+  title: string;
+  subscriberCount: number;
+  viewCount: number;
+  videoCount: number;
+  nicheScore: number;
+  isOutlier: boolean;
+  thumbnailUrl: string | null;
+  estimatedMonthlyRevenue: number;
+  videos: VideoData[];
+}
 
 interface NicheData {
   id: string;
@@ -26,14 +51,18 @@ interface NicheData {
   estimatedCPM: number;
   iconEmoji: string | null;
   _count: { channels: number };
-  channels: Array<{
-    id: string;
-    title: string;
-    subscriberCount: number;
-    nicheScore: number;
-    isOutlier: boolean;
-  }>;
+  channels: ChannelInNiche[];
 }
+
+// Smart filter tabs — inspired by NexLev's best UX pattern
+const FILTER_TABS = [
+  { key: "all", label: "All Niches", icon: BarChart3 },
+  { key: "outliers", label: "🔥 Outliers", icon: Flame },
+  { key: "highGrowth", label: "📈 High Growth", icon: TrendingUp },
+  { key: "highCPM", label: "💰 High CPM", icon: DollarSign },
+  { key: "lowCompetition", label: "🏆 Low Competition", icon: Shield },
+  { key: "declining", label: "📉 Declining", icon: TrendingDown },
+];
 
 function getTrendBadge(direction: string) {
   if (direction === "UP")
@@ -78,29 +107,34 @@ function formatNumber(n: number): string {
   return n.toString();
 }
 
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const days = Math.floor(diff / 86400000);
+  if (days > 365) return `${Math.floor(days / 365)}y ago`;
+  if (days > 30) return `${Math.floor(days / 30)}mo ago`;
+  if (days > 0) return `${days}d ago`;
+  return "Today";
+}
+
 export default function NicheFinderPage() {
   const [niches, setNiches] = useState<NicheData[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [competitionFilter, setCompetitionFilter] = useState("");
-  const [trendFilter, setTrendFilter] = useState("");
-  const [sortBy, setSortBy] = useState("averageNicheScore");
+  const [activeTab, setActiveTab] = useState("all");
   const [expandedNiche, setExpandedNiche] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams();
-    params.set("sort", sortBy);
-    params.set("order", "desc");
-    if (competitionFilter) params.set("competition", competitionFilter);
-    if (trendFilter) params.set("trend", trendFilter);
+    params.set("tab", activeTab);
+    if (searchQuery) params.set("search", searchQuery);
 
     setLoading(true);
     fetch(`/api/niches?${params.toString()}`)
       .then((r) => r.json())
-      .then((data) => setNiches(data.niches))
+      .then((data) => setNiches(data.niches || []))
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [sortBy, competitionFilter, trendFilter]);
+  }, [activeTab, searchQuery]);
 
   const filtered = niches.filter((n) =>
     n.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -125,68 +159,43 @@ export default function NicheFinderPage() {
         </Button>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3">
-        {/* Search */}
-        <div className="relative flex-1 min-w-[200px] max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
-          <input
-            type="text"
-            placeholder="Search niches..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-10 pl-10 pr-4 rounded-lg bg-[#1E293B]/50 border border-[#1E293B] text-sm text-white placeholder-[#94A3B8] focus:outline-none focus:border-[#64FFDA]/50 focus:ring-1 focus:ring-[#64FFDA]/20 transition-all duration-200"
-          />
-        </div>
-
-        {/* Competition filter */}
-        <div className="relative">
-          <select
-            value={competitionFilter}
-            onChange={(e) => setCompetitionFilter(e.target.value)}
-            className="h-10 px-3 pr-8 rounded-lg bg-[#1E293B]/50 border border-[#1E293B] text-sm text-white appearance-none cursor-pointer focus:outline-none focus:border-[#64FFDA]/50"
+      {/* Smart Filter Tabs — NexLev-style horizontal scrollable */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+        {FILTER_TABS.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer border ${
+              activeTab === tab.key
+                ? "bg-[#64FFDA]/10 border-[#64FFDA]/30 text-[#64FFDA] shadow-[0_0_12px_rgba(100,255,218,0.08)]"
+                : "bg-[#1E293B]/30 border-[#1E293B] text-[#94A3B8] hover:text-white hover:border-[#334155]"
+            }`}
           >
-            <option value="">All Competition</option>
-            <option value="LOW">Low Competition</option>
-            <option value="MEDIUM">Medium Competition</option>
-            <option value="HIGH">High Competition</option>
-          </select>
-          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#94A3B8] pointer-events-none" />
-        </div>
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
-        {/* Trend filter */}
-        <div className="relative">
-          <select
-            value={trendFilter}
-            onChange={(e) => setTrendFilter(e.target.value)}
-            className="h-10 px-3 pr-8 rounded-lg bg-[#1E293B]/50 border border-[#1E293B] text-sm text-white appearance-none cursor-pointer focus:outline-none focus:border-[#64FFDA]/50"
-          >
-            <option value="">All Trends</option>
-            <option value="UP">Rising</option>
-            <option value="STABLE">Stable</option>
-            <option value="DOWN">Declining</option>
-          </select>
-          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#94A3B8] pointer-events-none" />
-        </div>
-
-        {/* Sort */}
-        <div className="relative">
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="h-10 px-3 pr-8 rounded-lg bg-[#1E293B]/50 border border-[#1E293B] text-sm text-white appearance-none cursor-pointer focus:outline-none focus:border-[#64FFDA]/50"
-          >
-            <option value="averageNicheScore">Score (High → Low)</option>
-            <option value="estimatedCPM">CPM (High → Low)</option>
-            <option value="channelCount">Channels</option>
-          </select>
-          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#94A3B8] pointer-events-none" />
-        </div>
+      {/* Search Bar */}
+      <div className="relative max-w-md">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
+        <input
+          type="text"
+          placeholder="Search niches..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full h-10 pl-10 pr-4 rounded-lg bg-[#1E293B]/50 border border-[#1E293B] text-sm text-white placeholder-[#94A3B8] focus:outline-none focus:border-[#64FFDA]/50 focus:ring-1 focus:ring-[#64FFDA]/20 transition-all duration-200"
+        />
       </div>
 
       {/* Results count */}
       <div className="text-xs text-[#94A3B8]">
         Showing <span className="text-white font-medium">{filtered.length}</span> niches
+        {activeTab !== "all" && (
+          <span className="ml-2 text-[#64FFDA]">
+            • Filtered: {FILTER_TABS.find((t) => t.key === activeTab)?.label}
+          </span>
+        )}
       </div>
 
       {/* Loading skeleton */}
@@ -282,32 +291,40 @@ export default function NicheFinderPage() {
                 </div>
               </div>
 
-              {/* Expanded: Top channels */}
+              {/* Expanded: Top channels with video thumbnails */}
               {expandedNiche === niche.id && niche.channels.length > 0 && (
-                <div className="border-t border-[#1E293B] px-5 py-3 bg-[#0A0E14]/50 animate-slide-down">
-                  <div className="text-[10px] text-[#94A3B8] uppercase tracking-wider mb-2">
+                <div className="border-t border-[#1E293B] px-5 py-4 bg-[#0A0E14]/50 space-y-4">
+                  <div className="text-[10px] text-[#94A3B8] uppercase tracking-wider">
                     Top Channels
                   </div>
                   {niche.channels.map((ch) => (
-                    <div
-                      key={ch.id}
-                      className="flex items-center justify-between py-1.5"
-                    >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <div className="w-6 h-6 rounded-full bg-[#1E293B] flex items-center justify-center text-[9px] font-bold text-[#94A3B8] shrink-0">
-                          {ch.title.charAt(0)}
+                    <div key={ch.id} className="space-y-2">
+                      {/* Channel row */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 min-w-0">
+                          {ch.thumbnailUrl ? (
+                            <img
+                              src={ch.thumbnailUrl}
+                              alt={ch.title}
+                              className="w-8 h-8 rounded-full object-cover shrink-0"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-[#1E293B] flex items-center justify-center text-[10px] font-bold text-[#94A3B8] shrink-0">
+                              {ch.title.charAt(0)}
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <span className="text-xs text-white truncate block">{ch.title}</span>
+                            <span className="text-[10px] text-[#94A3B8]">
+                              {formatNumber(ch.subscriberCount)} subs • {formatNumber(ch.viewCount)} views
+                            </span>
+                          </div>
+                          {ch.isOutlier && (
+                            <span className="px-1 py-0.5 rounded text-[8px] bg-[#F472B6]/10 text-[#F472B6] shrink-0">
+                              OUTLIER
+                            </span>
+                          )}
                         </div>
-                        <span className="text-xs text-white truncate">{ch.title}</span>
-                        {ch.isOutlier && (
-                          <span className="px-1 py-0.5 rounded text-[8px] bg-[#F472B6]/10 text-[#F472B6] shrink-0">
-                            OUTLIER
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-[#94A3B8] font-mono">
-                          {formatNumber(ch.subscriberCount)}
-                        </span>
                         <span
                           className={`text-xs font-mono font-bold ${
                             ch.nicheScore >= 80
@@ -320,12 +337,59 @@ export default function NicheFinderPage() {
                           {ch.nicheScore.toFixed(0)}
                         </span>
                       </div>
+                      
+                      {/* Video thumbnails — NexLev-style "Most Popular Videos" */}
+                      {ch.videos && ch.videos.length > 0 && (
+                        <div className="flex gap-2 overflow-x-auto pb-1 pl-10">
+                          {ch.videos.map((video) => (
+                            <div
+                              key={video.id}
+                              className="flex-shrink-0 w-[140px] group/vid"
+                            >
+                              <div className="relative rounded-lg overflow-hidden bg-[#1E293B] aspect-video mb-1">
+                                {video.thumbnail ? (
+                                  <img
+                                    src={video.thumbnail}
+                                    alt={video.title}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center">
+                                    <Play className="w-5 h-5 text-[#94A3B8]" />
+                                  </div>
+                                )}
+                                <div className="absolute bottom-1 right-1 bg-black/70 px-1 py-0.5 rounded text-[8px] text-white font-mono">
+                                  {formatNumber(video.viewCount)}
+                                </div>
+                              </div>
+                              <p className="text-[9px] text-[#94A3B8] line-clamp-2 leading-tight">
+                                {video.title}
+                              </p>
+                              <p className="text-[8px] text-[#64748B]">{timeAgo(video.publishedAt)}</p>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!loading && filtered.length === 0 && (
+        <div className="text-center py-16">
+          <Search className="w-12 h-12 text-[#1E293B] mx-auto mb-4" />
+          <p className="text-[#94A3B8] text-sm">No niches found for this filter.</p>
+          <button
+            onClick={() => { setActiveTab("all"); setSearchQuery(""); }}
+            className="mt-3 text-[#64FFDA] text-sm hover:underline cursor-pointer"
+          >
+            Clear filters
+          </button>
         </div>
       )}
     </div>

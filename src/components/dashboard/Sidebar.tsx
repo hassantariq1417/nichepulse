@@ -16,12 +16,14 @@ import {
   Bookmark,
   Bell,
   Database,
+  Hash,
 } from "lucide-react";
 
 const navItems = [
   { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
   { label: "Niche Finder", href: "/dashboard/niches", icon: Search },
   { label: "Channels", href: "/dashboard/channels", icon: TrendingUp },
+  { label: "Keywords", href: "/dashboard/keywords", icon: Hash },
   { label: "Content Studio", href: "/dashboard/content", icon: FileText },
   { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
   { label: "Saved", href: "/dashboard/saved", icon: Bookmark },
