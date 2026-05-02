@@ -20,6 +20,9 @@ const NICHE_SEEDS: Record<string, string[]> = {
     "UC7eBNeDW1GQf2NJQ6G6gAxw", // Ramsey Solutions (Dave Ramsey)
     "UCMPcupZziOB8R6zEbw_elvw", // The Money Guy Show
     "UCAqAp1uh_5-tmEimhSqtoyw", // Caleb Hammer
+    "UCSPYNpQ2fHv9HJ-q6MIMaPw", // The Financial Diet
+    "UCTTYccSBNghxcxULTGaO1bA", // NerdWallet
+    "UCVWX3F3DrTvDKa0LRilQoQQ", // Economics Explained
   ],
   "ai-tools": [
     "UC2Xd-TjJByJyK2w1zNwY0zQ", // Fireship
@@ -33,6 +36,8 @@ const NICHE_SEEDS: Record<string, string[]> = {
     "UCG7J20LhUeLl6y_Emi7OJrA", // MKBHD (Marques Brownlee)
     "UCOuGATIAbd2DvzJmUgXn2IQ", // NetworkChuck
     "UCGkpFfEMF0eMJlh9xXj2lMw", // ColdFusion
+    "UCHmD-oSpV0sNfAUnpYpj8KA", // Yannic Kilcher (AI research)
+    "UCgKadKkzK-Ea_YnogNKtOlA", // ExplainingComputers
   ],
   stoicism: [
     "UC6N2Vvwh5Pb9F530wDt_fjQ", // Daily Stoic
@@ -53,10 +58,10 @@ const NICHE_SEEDS: Record<string, string[]> = {
     "UCCHp47gntygWpivIiw45l4Q", // Eleanor Neale
     "UCuX9VrqRC3-EUq1eZ0NBbQg", // Wendigoon
     "UC2PA-AKmVpU6NKCGtZq_rKQ", // Philosophy Tube
-    "UCaIswiqbPnwmwQu5xyjtLDw", // That Chapter
     "UC5twq_BoIOBl1gdNseZq7bA", // Lazy Masquerade
     "UCzwtKPc68r580mPesHscivw", // Nexpo
     "UCHv7ZckTJweMD0hp9mGR4EA", // ScareTheater
+    "UCX51Dixddr5HuwLVBH9ykeQ", // Top5s (cold cases)
   ],
   mindset: [
     "UCbKLRsBRSYDQwq8yd8C3ZYA", // Charisma on Command
@@ -82,7 +87,9 @@ const NICHE_SEEDS: Record<string, string[]> = {
     "UCa-ckhlKL98F8YXKQ-BALiw", // Graham Stephan
     "UCNIoLiHvnuKTKoJuLQUS--A", // Mark Tilbury
     "UCAiLfjNXkNv24uhpzUgPa6A", // MrBeast
-    "UCJZv4d5rbIKd4QHMPkcABXw", // Joma Tech
+    "UCXC3etwvNkMBGrc6tcwu5oQ", // Noah Kagan
+    "UCydShVfAub9TSmL1N4BTlGQ", // Young Entrepreneurs Forum
+    "UCbayot0NQ0HWeCs9J8Mx7fA", // Channel Makers (Income School)
   ],
   luxury: [
     "UCWKe8LtzKnsk-j6wQm4fuWw", // Enes Yilmazer
@@ -96,6 +103,8 @@ const NICHE_SEEDS: Record<string, string[]> = {
     "UCzwtKPc68r580mPesHscivw", // Nexpo
     "UCHv7ZckTJweMD0hp9mGR4EA", // ScareTheater
     "UCTWKe1zATFV6d0o6oLS9sgw", // Wendover Productions
+    "UCvayZDkq6wTj5EQtulrpgZA", // Sam O'Nella (10.7M views)
+    "UCCGvq-qmjFmmMD4e-PLQqGg", // Kings and Generals
   ],
   "real-estate": [
     "UCxDXuLvtjJ9Est8PrG3i2VA", // BiggerPockets
@@ -111,8 +120,8 @@ const NICHE_SEEDS: Record<string, string[]> = {
     "UCFbNIlppjAuEX4znoulh0Cw", // Web Dev Simplified
     "UCZirJBCIZsSgsSPn-uWVSfg", // Tech With Tim
     "UCwE6vJXm1I3XmMA6g92HXxw", // The Cherno
-    "UCJZv4d5rbIKd4QHMPkcABXw", // Joma Tech
     "UC1_uAIS3r8Vu6JjXWvastJg", // 3Blue1Brown
+    "UC29ju8bIPH5as8OGnQzwJyA", // Traversy Media
   ],
   health: [
     "UCUdettijNYvLAm4AixZv4RA", // SciShow
@@ -123,9 +132,13 @@ const NICHE_SEEDS: Record<string, string[]> = {
     "UCin0m13qWv3-051xlWlHamA", // Veritasium
     "UC513PdAP2-jWkJunTh5kXRw", // Mark Rober
     "UC8VkNBOwvsTlFjoSnNSMmxw", // SmarterEveryDay
+    "UC5fdyC4LxyyYv8Am6nDrkmg", // FoundMyFitness (Rhonda Patrick)
   ],
   languages: [
     "UCHRz_dCqwYlYQ5_b9TZswpA", // Learn French With Alexa
+    "UCgF23VqDjioQVQqHUzzSe9g", // PortuguesePod101
+    "UCb5faEH1hEiLaT_aGMBWeBg", // ItalianPod101
+    "UCAL4AMMMXKxHDu3FqZV6CbQ", // Easy Spanish
   ],
   "travel-hacks": [
     "UCxkF42nqXoZ0sZP-GqU-Cww", // Mark Wiens
