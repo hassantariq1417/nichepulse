@@ -96,8 +96,13 @@ async function scrapeYouTubePage(channelId: string): Promise<{
     // Regex fallbacks for subscriber count
     if (subscriberCount === 0) {
       const subPatterns = [
-        /\"subscriberCountText\":\{\"simpleText\":\"([^"]+)\"/,
-        /\"subscriberCount\":\"(\d+)\"/,
+        // Accessibility label: "label":"5.16 million subscribers"
+        /"subscriberCountText"[^}]*"label":"([^"]+)"/,
+        // Simple text: "simpleText":"5.16M subscribers"
+        /"subscriberCountText":\{"simpleText":"([^"]+)"/,
+        // Plain subscriber count
+        /"subscriberCount":"(\d+)"/,
+        // Nested accessibility
         /subscribers"[^}]*"simpleText":"([^"]+)"/,
       ];
       for (const pattern of subPatterns) {
@@ -138,27 +143,42 @@ async function scrapeYouTubePage(channelId: string): Promise<{
 function parseSubCount(text: string): number {
   if (!text) return 0;
 
-  // "1.5M subscribers" → 1500000
-  // "234K subscribers" → 234000
-  // "12,345 subscribers" → 12345
-  const cleaned = text.replace(/\s*subscribers?/i, "").trim();
+  // Clean up: "5.16 million subscribers" → "5.16 million"
+  const cleaned = text
+    .replace(/\s*subscribers?/i, "")
+    .replace(/\s*abonnés?/i, "")
+    .trim();
 
   const multipliers: Record<string, number> = {
     K: 1_000,
     M: 1_000_000,
     B: 1_000_000_000,
+    thousand: 1_000,
+    million: 1_000_000,
+    billion: 1_000_000_000,
+    lakh: 100_000,
+    crore: 10_000_000,
   };
 
-  const match = cleaned.match(/^([\d.]+)\s*([KMB])?$/i);
-  if (match) {
-    const num = parseFloat(match[1]);
-    const mult = match[2]
-      ? multipliers[match[2].toUpperCase()] || 1
-      : 1;
+  // "5.16 million" or "234 thousand"
+  const wordMatch = cleaned.match(
+    /^([\d.]+)\s+(thousand|million|billion|lakh|crore)$/i
+  );
+  if (wordMatch) {
+    const num = parseFloat(wordMatch[1]);
+    const mult = multipliers[wordMatch[2].toLowerCase()] || 1;
     return Math.round(num * mult);
   }
 
-  // Plain number with commas
+  // "5.16M" or "234K"
+  const abbrMatch = cleaned.match(/^([\d.]+)\s*([KMB])$/i);
+  if (abbrMatch) {
+    const num = parseFloat(abbrMatch[1]);
+    const mult = multipliers[abbrMatch[2].toUpperCase()] || 1;
+    return Math.round(num * mult);
+  }
+
+  // Plain number: "12,345" or "12345"
   const plain = parseInt(cleaned.replace(/,/g, ""));
   return isNaN(plain) ? 0 : plain;
 }
