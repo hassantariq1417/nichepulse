@@ -186,10 +186,16 @@ async function searchYouTubeForChannels(query: string): Promise<string[]> {
     const html = await res.text();
 
     const channelIds = new Set<string>();
-    for (const m of html.matchAll(/"channelId":"(UC[a-zA-Z0-9_-]{22})"/g)) {
+    const idMatches = Array.from(
+      html.matchAll(/"channelId":"(UC[a-zA-Z0-9_-]{22})"/g)
+    );
+    for (const m of idMatches) {
       channelIds.add(m[1]);
     }
-    for (const m of html.matchAll(/\/channel\/(UC[a-zA-Z0-9_-]{22})/g)) {
+    const urlMatches = Array.from(
+      html.matchAll(/\/channel\/(UC[a-zA-Z0-9_-]{22})/g)
+    );
+    for (const m of urlMatches) {
       channelIds.add(m[1]);
     }
     return Array.from(channelIds).slice(0, 15);
