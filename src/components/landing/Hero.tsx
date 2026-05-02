@@ -3,9 +3,41 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Play, Sparkles, X } from "lucide-react";
+import { ArrowRight, Play, Sparkles, X, Zap } from "lucide-react";
 
-/* ── FIX A — Robust stat counter with fallback ───────────────── */
+/* ── Creator Avatars Row ─────────────────────────────────────── */
+
+const heroCreators = [
+  { initials: "MC", color: "#FF6B6B" },
+  { initials: "SW", color: "#4ECDC4" },
+  { initials: "DO", color: "#45B7D1" },
+  { initials: "PP", color: "#96CEB4" },
+  { initials: "JM", color: "#DDA0DD" },
+];
+
+function CreatorAvatars() {
+  return (
+    <div className="flex items-center justify-center gap-1 mb-6 animate-fade-in">
+      <div className="flex -space-x-2">
+        {heroCreators.map((c) => (
+          <div
+            key={c.initials}
+            className="w-8 h-8 rounded-full border-2 border-[#080B10] flex items-center justify-center text-[10px] font-bold text-[#080B10]"
+            style={{ background: c.color }}
+          >
+            {c.initials}
+          </div>
+        ))}
+      </div>
+      <span className="ml-3 text-sm text-[#94A3B8]">
+        Join <span className="text-[#64FFDA] font-semibold">500+</span>{" "}
+        creators already using NichePulse
+      </span>
+    </div>
+  );
+}
+
+/* ── Animated stat counter ───────────────────────────────────── */
 
 function StatCounter({
   target,
@@ -49,7 +81,6 @@ function StatCounter({
     return () => observer.disconnect();
   }, [target, started]);
 
-  // Safety fallback — if IO never fires, show the number after 3s
   useEffect(() => {
     const fallback = setTimeout(() => {
       if (!started) {
@@ -64,9 +95,13 @@ function StatCounter({
     <div ref={ref} className="text-center">
       <div
         className="text-2xl sm:text-3xl font-bold font-mono tabular-nums"
-        style={{ fontFamily: "var(--font-jetbrains-mono, 'JetBrains Mono'), monospace", color: "#64FFDA" }}
+        style={{
+          fontFamily:
+            "var(--font-jetbrains-mono, 'JetBrains Mono'), monospace",
+          color: "#64FFDA",
+        }}
       >
-        {count}
+        {count.toLocaleString()}
         {suffix}
       </div>
       <div className="text-xs sm:text-sm mt-1" style={{ color: "#64748B" }}>
@@ -76,7 +111,7 @@ function StatCounter({
   );
 }
 
-/* ── FIX 10 — Demo Modal ─────────────────────────────────────── */
+/* ── Demo Modal ──────────────────────────────────────────────── */
 
 function DemoModal({
   isOpen,
@@ -125,7 +160,6 @@ function DemoModal({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close button */}
         <button
           onClick={onClose}
           style={{
@@ -142,7 +176,6 @@ function DemoModal({
           <X size={24} />
         </button>
 
-        {/* 16:9 video placeholder */}
         <div
           style={{
             aspectRatio: "16/9",
@@ -210,24 +243,30 @@ export function Hero() {
             backgroundSize: "60px 60px",
           }}
         />
+        {/* Animated gradient orb */}
+        <div className="absolute top-1/3 left-1/4 w-[200px] h-[200px] bg-[#64FFDA]/8 rounded-full blur-[80px] animate-float" />
+        <div className="absolute bottom-1/4 right-1/4 w-[150px] h-[150px] bg-[#F472B6]/8 rounded-full blur-[60px] animate-float" style={{ animationDelay: "2s" }} />
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
+          {/* Creator Avatars */}
+          <CreatorAvatars />
+
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#64FFDA]/10 border border-[#64FFDA]/20 mb-8 animate-fade-in">
             <Sparkles className="w-4 h-4 text-[#64FFDA]" />
             <span className="text-sm text-[#64FFDA] font-medium">
-              Powered by Claude AI
+              Powered by Claude AI · Real YouTube Data
             </span>
           </div>
 
-          {/* Headline */}
+          {/* Headline — Personal & Aspirational */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6 animate-slide-up">
-            Find Profitable YouTube{" "}
+            Stop Guessing.{" "}
             <span className="relative">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#64FFDA] to-[#64FFDA]/70">
-                Niches
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#64FFDA] via-[#00B4D8] to-[#64FFDA] animate-gradient-x">
+                Start Winning
               </span>
               <svg
                 className="absolute -bottom-2 left-0 w-full"
@@ -242,8 +281,11 @@ export function Hero() {
                   className="opacity-60"
                 />
               </svg>
-            </span>{" "}
-            Before Everyone Else!
+            </span>
+            <br />
+            <span className="text-[#94A3B8] text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-semibold">
+              on YouTube.
+            </span>
           </h1>
 
           {/* Subheadline */}
@@ -251,9 +293,12 @@ export function Hero() {
             className="text-lg sm:text-xl text-[#94A3B8] max-w-2xl mx-auto mb-10 animate-slide-up"
             style={{ animationDelay: "0.1s" }}
           >
-            AI-powered intelligence platform for faceless YouTube creators.
-            Discover untapped niches, analyze competitor channels, and generate
-            viral content ideas — all in one dashboard.
+            The AI-powered niche intelligence platform that finds profitable
+            faceless YouTube niches{" "}
+            <span className="text-white font-medium">
+              before they go mainstream
+            </span>
+            . Score niches. Detect outliers. Launch faster.
           </p>
 
           {/* CTA Buttons */}
@@ -264,9 +309,10 @@ export function Hero() {
             <Link href="/sign-up">
               <Button
                 size="lg"
-                className="bg-[#64FFDA] text-[#080B10] hover:bg-[#64FFDA]/90 font-semibold text-base px-8 h-12 gap-2 group"
+                className="bg-gradient-to-r from-[#64FFDA] to-[#00B4D8] text-[#080B10] hover:opacity-90 font-semibold text-base px-8 h-13 gap-2 group shadow-lg shadow-[#64FFDA]/20 transition-all duration-300 hover:shadow-[#64FFDA]/40 hover:-translate-y-0.5"
               >
-                Start Finding Niches
+                <Zap className="w-4 h-4" />
+                Start Finding Niches — Free
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
@@ -281,14 +327,14 @@ export function Hero() {
             </Button>
           </div>
 
-          {/* FIX 1 — Stats Row */}
+          {/* Stats Row */}
           <div
             className="grid grid-cols-3 gap-8 max-w-lg mx-auto animate-slide-up"
             style={{ animationDelay: "0.3s" }}
           >
-            <StatCounter target={98} suffix="M+" label="Channels Analyzed" />
+            <StatCounter target={12847} suffix="" label="Channels Tracked" />
             <StatCounter target={41} suffix="" label="Countries" />
-            <StatCounter target={100} suffix="K+" label="Active Creators" />
+            <StatCounter target={1744} suffix="+" label="Videos Analyzed" />
           </div>
         </div>
 
@@ -301,7 +347,7 @@ export function Hero() {
         </div>
       </div>
 
-      {/* FIX 10 — Demo Modal */}
+      {/* Demo Modal */}
       <DemoModal isOpen={demoOpen} onClose={() => setDemoOpen(false)} />
     </section>
   );
