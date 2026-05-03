@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import {
   TrendingUp,
   BarChart3,
@@ -12,9 +13,11 @@ import {
   ArrowDownRight,
   DollarSign,
   Users,
+  Eye,
+  Video,
+  ChevronRight,
 } from "lucide-react";
 import { getScoreBadgeClasses } from "@/lib/scoring";
-import { CachedBadge } from "@/components/dashboard/CachedBadge";
 
 interface DashboardStats {
   stats: {
@@ -41,6 +44,7 @@ interface DashboardStats {
     title: string;
     subscriberCount: number;
     viewCount: number;
+    videoCount: number;
     nicheScore: number;
     growthRate30d: number;
     isOutlier: boolean;
@@ -52,60 +56,11 @@ interface DashboardStats {
   }>;
 }
 
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  change,
-  color,
-}: {
-  icon: React.ElementType;
-  label: string;
-  value: string;
-  change?: string;
-  color: string;
-}) {
-  const isPositive = change && !change.startsWith("-");
-  return (
-    <div className="rounded-xl border border-[#1E293B] bg-[#0D1117]/60 p-5 hover:border-[#1E293B]/80 transition-all duration-200 cursor-default">
-      <div className="flex items-start justify-between mb-3">
-        <div
-          className="w-10 h-10 rounded-lg flex items-center justify-center"
-          style={{ backgroundColor: `${color}15` }}
-        >
-          <Icon className="w-5 h-5" style={{ color }} />
-        </div>
-        {change && (
-          <div
-            className={`flex items-center gap-1 text-xs font-medium ${
-              isPositive ? "text-[#34D399]" : "text-[#EF4444]"
-            }`}
-          >
-            {isPositive ? (
-              <ArrowUpRight className="w-3 h-3" />
-            ) : (
-              <ArrowDownRight className="w-3 h-3" />
-            )}
-            {change}
-          </div>
-        )}
-      </div>
-      <div className="text-2xl font-bold font-mono text-white">{value}</div>
-      <div className="text-xs text-[#94A3B8] mt-1">{label}</div>
-    </div>
-  );
-}
-
 function formatNumber(n: number): string {
+  if (n >= 1000000000) return (n / 1000000000).toFixed(2) + "B";
   if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
   if (n >= 1000) return (n / 1000).toFixed(1) + "K";
-  return n.toString();
-}
-
-function getTrendIcon(direction: string) {
-  if (direction === "UP") return <ArrowUpRight className="w-3.5 h-3.5 text-[#34D399]" />;
-  if (direction === "DOWN") return <ArrowDownRight className="w-3.5 h-3.5 text-[#EF4444]" />;
-  return <span className="w-3.5 h-3.5 text-[#94A3B8]">—</span>;
+  return n.toLocaleString();
 }
 
 function getCompetitionColor(level: string) {
@@ -121,7 +76,6 @@ function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Redirect to onboarding if not completed
   useEffect(() => {
     if (typeof window !== "undefined") {
       const onboarded = localStorage.getItem("nichepulse_onboarded");
@@ -132,11 +86,9 @@ function DashboardContent() {
     }
   }, [router]);
 
-  // Show welcome toast on first arrival from onboarding
   useEffect(() => {
     if (searchParams.get("onboarded") === "true") {
       setShowToast(true);
-      // Clean URL
       window.history.replaceState({}, "", "/dashboard");
       const timer = setTimeout(() => setShowToast(false), 4000);
       return () => clearTimeout(timer);
@@ -150,7 +102,6 @@ function DashboardContent() {
         return r.json();
       })
       .then((d) => {
-        // Validate the shape — don't set data if the API returned an error
         if (d?.stats?.totalChannels !== undefined) {
           setData(d);
         }
@@ -161,28 +112,14 @@ function DashboardContent() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        {/* Skeleton stat cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <div
-              key={i}
-              className="rounded-xl border border-[#1E293B] bg-[#0D1117]/60 p-5 animate-pulse"
-            >
-              <div className="w-10 h-10 rounded-lg bg-[#1E293B] mb-3" />
-              <div className="w-20 h-7 rounded bg-[#1E293B] mb-2" />
-              <div className="w-24 h-4 rounded bg-[#1E293B]" />
-            </div>
-          ))}
-        </div>
-        {/* Skeleton table */}
-        <div className="rounded-xl border border-[#1E293B] bg-[#0D1117]/60 p-6 animate-pulse">
-          <div className="w-40 h-6 rounded bg-[#1E293B] mb-4" />
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="flex gap-4 py-3">
-              <div className="w-full h-5 rounded bg-[#1E293B]" />
-            </div>
-          ))}
+      <div className="space-y-6 max-w-[1200px]">
+        <div className="animate-pulse space-y-6">
+          <div className="w-64 h-8 bg-[#1E293B] rounded" />
+          <div className="w-48 h-5 bg-[#1E293B] rounded" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <div className="h-64 bg-[#1E293B]/50 rounded-xl border border-[#1E293B]" />
+            <div className="h-64 bg-[#1E293B]/50 rounded-xl border border-[#1E293B]" />
+          </div>
         </div>
       </div>
     );
@@ -196,7 +133,7 @@ function DashboardContent() {
         </div>
         <h2 className="text-xl font-bold text-white mb-2">No Data Yet</h2>
         <p className="text-sm text-[#94A3B8] max-w-md mb-6">
-          Your database is empty. Run the data ingest to start scraping real YouTube channels and see your dashboard come alive.
+          Your database is empty. Run the data ingest to start scraping real YouTube channels.
         </p>
         <a
           href="/dashboard/ingest"
@@ -209,251 +146,331 @@ function DashboardContent() {
       </div>
     );
   }
+
   const { stats, topNiches, recentChannels } = data;
+
+  // Get outlier channels sorted by score
+  const outlierChannels = [...recentChannels]
+    .filter((c) => c.isOutlier)
+    .sort((a, b) => b.nicheScore - a.nicheScore)
+    .slice(0, 5);
+
+  // Get channels sorted for competition view
+  const competitionChannels = [...recentChannels]
+    .sort((a, b) => b.viewCount - a.viewCount)
+    .slice(0, 5);
 
   return (
     <>
-    <div className="space-y-6 max-w-[1400px]">
-      {/* Page header */}
-      <div>
-        <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-        <p className="text-sm text-[#94A3B8] mt-1">
-          Your YouTube niche intelligence at a glance
-        </p>
-      </div>
+      <div className="space-y-6 max-w-[1200px]">
+        {/* NexLev-style breadcrumb */}
+        <div className="flex items-center gap-2 text-sm text-[#94A3B8]">
+          <Zap className="w-4 h-4 text-[#64FFDA]" />
+          <span className="text-white font-medium">Niche Finder</span>
+          <span>›</span>
+          <span className="text-white">Overview</span>
+        </div>
 
-      {/* Stats Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          icon={Users}
-          label="Tracked Channels"
-          value={formatNumber(stats.totalChannels)}
-          change="+12%"
-          color="#64FFDA"
-        />
-        <StatCard
-          icon={Flame}
-          label="Outlier Channels"
-          value={stats.outlierCount.toString()}
-          change="+3"
-          color="#F472B6"
-        />
-        <StatCard
-          icon={BarChart3}
-          label="Avg. Niche Score"
-          value={stats.avgNicheScore.toString()}
-          color="#FCD34D"
-        />
-        <StatCard
-          icon={DollarSign}
-          label="Avg. Monthly Revenue"
-          value={`$${formatNumber(stats.avgRevenue)}`}
-          change="+8%"
-          color="#34D399"
-        />
-      </div>
-
-      {/* Main content grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Top Niches — 2 columns */}
-        <div className="lg:col-span-2 rounded-xl border border-[#1E293B] bg-[#0D1117]/60 overflow-hidden">
-          <div className="flex items-center justify-between px-6 py-4 border-b border-[#1E293B]">
-            <h2 className="text-base font-semibold text-white flex items-center gap-2">
-              <Zap className="w-4 h-4 text-[#64FFDA]" />
-              Top Performing Niches
-            </h2>
-            <a
-              href="/dashboard/niches"
-              className="text-xs text-[#64FFDA] hover:text-[#64FFDA]/80 cursor-pointer transition-colors"
-            >
-              View all →
-            </a>
+        {/* Upgrade Banner — similar to NexLev */}
+        <div className="rounded-xl bg-gradient-to-r from-[#818CF8]/10 to-[#64FFDA]/10 border border-[#818CF8]/20 px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Zap className="w-5 h-5 text-[#818CF8]" />
+            <span className="text-sm font-medium text-white">
+              Unlock AI Content Studio & Deep Analysis
+            </span>
           </div>
-          <div className="divide-y divide-[#1E293B]">
-            {topNiches.map((niche, i) => (
-              <div
-                key={niche.id}
-                className="flex items-center gap-4 px-6 py-4 hover:bg-[#1E293B]/20 transition-colors duration-150 cursor-pointer"
+          <div className="flex items-center gap-3">
+            <Link
+              href="/dashboard/content"
+              className="px-4 py-2 rounded-lg text-xs font-semibold bg-[#64FFDA] text-[#080B10] hover:bg-[#64FFDA]/90 transition-colors"
+            >
+              Try Content Studio
+            </Link>
+            <Link
+              href="/dashboard/niches"
+              className="px-4 py-2 rounded-lg text-xs font-medium text-[#94A3B8] border border-[#1E293B] hover:text-white hover:border-[#334155] transition-colors"
+            >
+              Browse Niches
+            </Link>
+          </div>
+        </div>
+
+        {/* Search bar */}
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1 max-w-lg">
+            <div className="flex items-center gap-2 h-10 px-3 rounded-xl bg-[#1E293B]/40 border border-[#1E293B]">
+              <span className="text-xs text-[#94A3B8] bg-[#0D1117] px-2 py-0.5 rounded border border-[#1E293B]">
+                Keyword ▾
+              </span>
+              <Search className="w-4 h-4 text-[#94A3B8]" />
+              <input
+                type="text"
+                placeholder="Search by keyword"
+                className="flex-1 bg-transparent text-sm text-white placeholder-[#64748B] focus:outline-none"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Welcome Section */}
+        <div>
+          <h1 className="text-2xl font-bold text-white">Welcome!</h1>
+          <div className="flex items-center gap-3 mt-1.5">
+            <span className="text-sm text-[#94A3B8]">Total Channels Analyzed:</span>
+            <span className="text-sm font-bold font-mono text-white">
+              {stats.totalChannels.toLocaleString()}
+            </span>
+            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold font-mono bg-[#34D399]/10 text-[#34D399]">
+              +{stats.trendingCount > 0 ? formatNumber(stats.trendingCount * 100) : "0"} 
+            </span>
+          </div>
+        </div>
+
+        {/* Two-panel layout — NexLev-style */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {/* Panel 1: Recently Added Outlier Channels */}
+          <div className="rounded-xl border border-[#1E293B] bg-[#0D1117]/60 overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[#1E293B]">
+              <div>
+                <h2 className="text-sm font-semibold text-white">
+                  Recently Added Outlier Channels
+                </h2>
+                <p className="text-[11px] text-[#64748B] mt-0.5">Last 24 Hours</p>
+              </div>
+              <Link
+                href="/dashboard/channels?tab=outliers"
+                className="text-[11px] text-[#64FFDA] hover:text-[#64FFDA]/80 font-medium"
               >
-                <div className="text-sm font-mono text-[#94A3B8] w-6 text-center">
-                  {i + 1}
+                View All
+              </Link>
+            </div>
+            <div className="divide-y divide-[#1E293B]/50">
+              {outlierChannels.length > 0 ? (
+                outlierChannels.map((channel) => {
+                  const avgViews = channel.videoCount > 0 ? channel.viewCount / channel.videoCount : 0;
+                  const outlierMultiplier = avgViews > 0 ? (avgViews / 10000).toFixed(1) : "0.0";
+                  return (
+                    <Link
+                      key={channel.id}
+                      href={`/dashboard/channels?search=${encodeURIComponent(channel.title)}`}
+                      className="flex items-center justify-between px-5 py-3.5 hover:bg-[#1E293B]/20 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#F472B6]/20 to-[#818CF8]/20 flex items-center justify-center text-xs font-bold text-[#F472B6] border border-[#1E293B]">
+                          {channel.title.charAt(0)}
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-white truncate max-w-[180px]">
+                            {channel.title}
+                          </div>
+                          <div className="text-[11px] text-[#64748B]">
+                            {formatNumber(channel.subscriberCount)} subscribers
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-sm font-bold font-mono text-[#F472B6]">
+                          {outlierMultiplier}x
+                        </span>
+                      </div>
+                    </Link>
+                  );
+                })
+              ) : (
+                <div className="px-5 py-8 text-center text-sm text-[#64748B]">
+                  No outlier channels found yet
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-white truncate">
-                    {niche.name}
-                  </div>
-                  <div className="text-xs text-[#94A3B8] mt-0.5">
-                    {niche.channelCount} channels · ${niche.estimatedCPM.toFixed(2)} CPM
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  {getTrendIcon(niche.trendDirection)}
-                  <span
-                    className={`px-2 py-0.5 rounded text-[10px] font-medium uppercase ${getCompetitionColor(
-                      niche.competitionLevel
-                    )}`}
-                  >
-                    {niche.competitionLevel}
-                  </span>
-                  <div
-                    className={`px-2.5 py-1 rounded-md text-xs font-mono font-bold border ${getScoreBadgeClasses(
-                      niche.averageNicheScore
-                    )}`}
-                  >
-                    {niche.averageNicheScore.toFixed(1)}
-                  </div>
+              )}
+            </div>
+          </div>
+
+          {/* Panel 2: Niches with High Future Competition */}
+          <div className="rounded-xl border border-[#1E293B] bg-[#0D1117]/60 overflow-hidden">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[#1E293B]">
+              <div>
+                <h2 className="text-sm font-semibold text-white">
+                  Niches with High Future Competition
+                </h2>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-[11px] text-[#64748B]">Last 24 hours</span>
+                  <ChevronRight className="w-3 h-3 text-[#64748B]" />
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Quick Stats Panel */}
-        <div className="rounded-xl border border-[#1E293B] bg-[#0D1117]/60 p-6 space-y-5">
-          <h2 className="text-base font-semibold text-white flex items-center gap-2">
-            <Search className="w-4 h-4 text-[#F472B6]" />
-            Quick Intel
-          </h2>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-[#94A3B8]">Niches Tracked</span>
-              <span className="text-sm font-mono font-bold text-white">{stats.totalNiches}</span>
+              <Link
+                href="/dashboard/niches"
+                className="text-[11px] text-[#64FFDA] hover:text-[#64FFDA]/80 font-medium"
+              >
+                View All
+              </Link>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-[#94A3B8]">Videos Analyzed</span>
-              <span className="text-sm font-mono font-bold text-white">
-                {formatNumber(stats.totalVideos)}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-[#94A3B8]">Trending Now</span>
-              <span className="text-sm font-mono font-bold text-[#34D399]">
-                {stats.trendingCount}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-[#94A3B8]">Outliers Found</span>
-              <span className="text-sm font-mono font-bold text-[#F472B6]">
-                {stats.outlierCount}
-              </span>
-            </div>
-          </div>
-
-          {/* Mini chart placeholder */}
-          <div className="pt-4 border-t border-[#1E293B]">
-            <div className="text-xs text-[#94A3B8] mb-3">Score Distribution</div>
-            <div className="flex items-end gap-1 h-16">
-              {[20, 35, 55, 70, 85, 65, 75, 90, 60, 80, 45, 95].map((h, i) => (
-                <div
-                  key={i}
-                  className="flex-1 rounded-sm bg-gradient-to-t from-[#64FFDA]/20 to-[#64FFDA]/50 transition-all duration-300 hover:to-[#64FFDA]/80"
-                  style={{ height: `${h}%` }}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Top Channels Table */}
-      <div className="rounded-xl border border-[#1E293B] bg-[#0D1117]/60 overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#1E293B]">
-          <h2 className="text-base font-semibold text-white flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-[#FCD34D]" />
-            Highest Scoring Channels
-          </h2>
-          <a
-            href="/dashboard/channels"
-            className="text-xs text-[#64FFDA] hover:text-[#64FFDA]/80 cursor-pointer transition-colors"
-          >
-            View all →
-          </a>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="text-xs text-[#94A3B8] border-b border-[#1E293B]">
-                <th className="text-left px-6 py-3 font-medium">Channel</th>
-                <th className="text-left px-4 py-3 font-medium">Niche</th>
-                <th className="text-right px-4 py-3 font-medium">Subscribers</th>
-                <th className="text-right px-4 py-3 font-medium">Views</th>
-                <th className="text-right px-4 py-3 font-medium">Growth</th>
-                <th className="text-right px-4 py-3 font-medium">Revenue</th>
-                <th className="text-right px-6 py-3 font-medium">Score</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#1E293B]">
-              {recentChannels.map((channel) => (
-                <tr
-                  key={channel.id}
-                  className="hover:bg-[#1E293B]/20 transition-colors duration-150 cursor-pointer"
-                >
-                  <td className="px-6 py-3">
+            <div className="divide-y divide-[#1E293B]/50">
+              {competitionChannels.map((channel) => {
+                const avgViews = channel.videoCount > 0 ? channel.viewCount / channel.videoCount : 0;
+                return (
+                  <div
+                    key={channel.id}
+                    className="flex items-center justify-between px-5 py-3.5 hover:bg-[#1E293B]/20 transition-colors"
+                  >
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#1E293B] flex items-center justify-center text-xs font-bold text-[#94A3B8]">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#64FFDA]/20 to-[#34D399]/20 flex items-center justify-center text-xs font-bold text-[#64FFDA] border border-[#1E293B]">
                         {channel.title.charAt(0)}
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-white truncate max-w-[200px]">
+                        <div className="text-sm font-medium text-white truncate max-w-[140px]">
                           {channel.title}
                         </div>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                          {channel.isOutlier && (
-                            <span className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-[#F472B6]/10 text-[#F472B6]">
-                              OUTLIER
-                            </span>
-                          )}
-                          {channel.isTrending && (
-                            <span className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-[#34D399]/10 text-[#34D399]">
-                              TRENDING
-                            </span>
-                          )}
-                          {channel.lastScrapedAt &&
-                            Date.now() - new Date(channel.lastScrapedAt).getTime() > 6 * 60 * 60 * 1000 && (
-                              <CachedBadge lastUpdated={channel.lastScrapedAt} />
-                          )}
+                        <div className="text-[11px] text-[#64748B]">
+                          {formatNumber(channel.subscriberCount)} subscribers
                         </div>
                       </div>
                     </div>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-[#94A3B8]">
-                    {channel.nicheCategory?.name || channel.category || "—"}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-white text-right font-mono">
-                    {formatNumber(channel.subscriberCount)}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-white text-right font-mono">
-                    {formatNumber(channel.viewCount)}
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <span
-                      className={`text-sm font-mono ${
-                        channel.growthRate30d > 0 ? "text-[#34D399]" : "text-[#EF4444]"
-                      }`}
-                    >
-                      {channel.growthRate30d > 0 ? "+" : ""}
-                      {channel.growthRate30d.toFixed(1)}%
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-white text-right font-mono">
-                    ${formatNumber(Math.round(channel.estimatedMonthlyRevenue))}
-                  </td>
-                  <td className="px-6 py-3 text-right">
-                    <span
-                      className={`inline-block px-2.5 py-1 rounded-md text-xs font-mono font-bold border ${getScoreBadgeClasses(
-                        channel.nicheScore
-                      )}`}
-                    >
-                      {channel.nicheScore.toFixed(1)}
-                    </span>
-                  </td>
+                    <div className="flex items-center gap-4 text-[11px] font-mono">
+                      <div className="flex items-center gap-1 text-[#94A3B8]">
+                        <Eye className="w-3 h-3" />
+                        {formatNumber(Math.round(avgViews))}
+                      </div>
+                      <div className="flex items-center gap-1 text-[#94A3B8]">
+                        <ArrowUpRight className="w-3 h-3" />
+                        {channel.growthRate30d > 0 ? channel.growthRate30d.toFixed(0) : "0"}
+                      </div>
+                      <div className="flex items-center gap-1 text-[#94A3B8]">
+                        <Video className="w-3 h-3" />
+                        {channel.videoCount}
+                      </div>
+                      <div className="flex items-center gap-1 text-[#34D399]">
+                        <TrendingUp className="w-3 h-3" />
+                        {(channel.nicheScore / 10).toFixed(1)}x
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Top Performing Niches — Full width */}
+        <div className="rounded-xl border border-[#1E293B] bg-[#0D1117]/60 overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-[#1E293B]">
+            <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+              <Flame className="w-4 h-4 text-[#FCD34D]" />
+              Top Performing Niches
+            </h2>
+            <Link
+              href="/dashboard/niches"
+              className="text-[11px] text-[#64FFDA] hover:text-[#64FFDA]/80 font-medium"
+            >
+              View all →
+            </Link>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="text-[11px] text-[#64748B] border-b border-[#1E293B]">
+                  <th className="text-left px-5 py-2.5 font-medium">#</th>
+                  <th className="text-left px-4 py-2.5 font-medium">Niche</th>
+                  <th className="text-right px-4 py-2.5 font-medium">Channels</th>
+                  <th className="text-right px-4 py-2.5 font-medium">CPM</th>
+                  <th className="text-center px-4 py-2.5 font-medium">Competition</th>
+                  <th className="text-center px-4 py-2.5 font-medium">Trend</th>
+                  <th className="text-right px-5 py-2.5 font-medium">Score</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-[#1E293B]/50">
+                {topNiches.map((niche, i) => (
+                  <tr
+                    key={niche.id}
+                    className="hover:bg-[#1E293B]/20 transition-colors cursor-pointer"
+                  >
+                    <td className="px-5 py-3 text-xs font-mono text-[#64748B]">{i + 1}</td>
+                    <td className="px-4 py-3">
+                      <Link
+                        href={`/dashboard/niches/${niche.id}`}
+                        className="text-sm font-medium text-white hover:text-[#64FFDA] transition-colors"
+                      >
+                        {niche.name}
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-[#94A3B8] text-right font-mono">
+                      {niche.channelCount}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-[#34D399] text-right font-mono">
+                      ${niche.estimatedCPM.toFixed(2)}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <span
+                        className={`inline-block px-2 py-0.5 rounded text-[10px] font-medium uppercase ${getCompetitionColor(
+                          niche.competitionLevel
+                        )}`}
+                      >
+                        {niche.competitionLevel}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {niche.trendDirection === "UP" ? (
+                        <ArrowUpRight className="w-4 h-4 text-[#34D399] mx-auto" />
+                      ) : niche.trendDirection === "DOWN" ? (
+                        <ArrowDownRight className="w-4 h-4 text-[#EF4444] mx-auto" />
+                      ) : (
+                        <span className="text-[#64748B] text-xs">—</span>
+                      )}
+                    </td>
+                    <td className="px-5 py-3 text-right">
+                      <span
+                        className={`inline-block px-2.5 py-1 rounded-md text-xs font-mono font-bold border ${getScoreBadgeClasses(
+                          niche.averageNicheScore
+                        )}`}
+                      >
+                        {niche.averageNicheScore.toFixed(1)}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Quick Stats Footer */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="rounded-xl border border-[#1E293B] bg-[#0D1117]/60 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Users className="w-4 h-4 text-[#64FFDA]" />
+              <span className="text-[11px] text-[#64748B]">Tracked Channels</span>
+            </div>
+            <div className="text-xl font-bold font-mono text-white">
+              {formatNumber(stats.totalChannels)}
+            </div>
+          </div>
+          <div className="rounded-xl border border-[#1E293B] bg-[#0D1117]/60 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Flame className="w-4 h-4 text-[#F472B6]" />
+              <span className="text-[11px] text-[#64748B]">Outlier Channels</span>
+            </div>
+            <div className="text-xl font-bold font-mono text-white">
+              {stats.outlierCount}
+            </div>
+          </div>
+          <div className="rounded-xl border border-[#1E293B] bg-[#0D1117]/60 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <BarChart3 className="w-4 h-4 text-[#FCD34D]" />
+              <span className="text-[11px] text-[#64748B]">Avg. Score</span>
+            </div>
+            <div className="text-xl font-bold font-mono text-white">
+              {stats.avgNicheScore}
+            </div>
+          </div>
+          <div className="rounded-xl border border-[#1E293B] bg-[#0D1117]/60 p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <DollarSign className="w-4 h-4 text-[#34D399]" />
+              <span className="text-[11px] text-[#64748B]">Avg. Revenue</span>
+            </div>
+            <div className="text-xl font-bold font-mono text-white">
+              ${formatNumber(stats.avgRevenue)}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
       {/* Welcome Toast */}
       {showToast && (
